@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Search</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+  <script src="search.js"></script>
+</head>
+<body>
+<div ng-app="searchApp" ng-controller="searchCtrl">
+        <h1>Search</h1>
+        <input type="text" ng-model="query"  size="30"
+        placeholder="What needs to be search?" ng-keyup="search()"/>   
+</div>
+</body>
+</html>
