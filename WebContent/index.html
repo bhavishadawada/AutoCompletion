@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Search</title>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+  <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
   <script src="search.js"></script>
 </head>
 <body>
@@ -13,6 +15,7 @@
         placeholder="What needs to be search?" ng-keyup="autoComplete()"/>   
         <button ng-click="search()">search</button>
         <pre>{{content}}</pre>
+        <input auto-complete ui-items="names" ng-model="selected">
 </div>
 </body>
 </html>
