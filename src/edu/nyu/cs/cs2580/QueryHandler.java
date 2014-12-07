@@ -2,6 +2,7 @@ package edu.nyu.cs.cs2580;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -92,111 +93,121 @@ class QueryHandler implements HttpHandler {
       }  // End of iterating over params
     }
   }
+	// For accessing the underlying documents to be used by the Ranker. Since 
+	// we are not worried about thread-safety here, the Indexer class must take
+	// care of thread-safety.
+	private Indexer _indexer;
 
-  // For accessing the underlying documents to be used by the Ranker. Since 
-  // we are not worried about thread-safety here, the Indexer class must take
-  // care of thread-safety.
-  private Indexer _indexer;
+	public QueryHandler(Options options, Indexer indexer) {
+		_indexer = indexer;
+	}
 
-  public QueryHandler(Options options, Indexer indexer) {
-    _indexer = indexer;
-  }
+	private void respondWithMsg(HttpExchange exchange, final String message)
+			throws IOException {
+		Headers responseHeaders = exchange.getResponseHeaders();
+		responseHeaders.set("Content-Type", "text/html");
+		responseHeaders.set("Access-Control-Allow-Origin", "*");
+		exchange.sendResponseHeaders(200, 0); // arbitrary number of bytes
+		OutputStream responseBody = exchange.getResponseBody();
+		responseBody.write(message.getBytes());
+		responseBody.close();
+	}
 
-  private void respondWithMsg(HttpExchange exchange, final String message)
-      throws IOException {
-    Headers responseHeaders = exchange.getResponseHeaders();
-    responseHeaders.set("Content-Type", "text/plain");
-    responseHeaders.set("Access-Control-Allow-Origin", "*");
-    exchange.sendResponseHeaders(200, 0); // arbitrary number of bytes
-    OutputStream responseBody = exchange.getResponseBody();
-    responseBody.write(message.getBytes());
-    responseBody.close();
-  }
+	private void constructPrfOutput(
+			final List<Map.Entry<String, Double>> queryEapansion, StringBuffer response) {
+		for(Map.Entry<String, Double> entry : queryEapansion){
+			response.append(response.length() > 0 ? "\n" : "");
+			response.append(entry.getKey() + "\t" + entry.getValue());
+		}
+	}
 
-  private void constructPrfOutput(
-      final List<Map.Entry<String, Double>> queryEapansion, StringBuffer response) {
-	  for(Map.Entry<String, Double> entry : queryEapansion){
-		  response.append(response.length() > 0 ? "\n" : "");
-		  response.append(entry.getKey() + "\t" + entry.getValue());
-	  }
-  }
+	private void constructTextOutput(
+			final Vector<ScoredDocument> docs, StringBuffer response) {
+		for (ScoredDocument doc : docs) {
+			response.append(response.length() > 0 ? "\n" : "");
+			response.append(doc.asTextResult());
+		}
+		response.append(response.length() > 0 ? "\n" : "");
+	}
+	
+	private void constructHtmlOutput(final Vector<ScoredDocument> docs, StringBuffer response){
+		for (ScoredDocument doc : docs) {
+			response.append(response.length() > 0 ? "\n" : "");
+			response.append(doc.asHtmlResult());
+		}
+		response.append(response.length() > 0 ? "\n" : "");
+	}
 
-  private void constructTextOutput(
-      final Vector<ScoredDocument> docs, StringBuffer response) {
-    for (ScoredDocument doc : docs) {
-      response.append(response.length() > 0 ? "\n" : "");
-      response.append(doc.asTextResult());
-    }
-    response.append(response.length() > 0 ? "\n" : "");
-  }
+	public void handle(HttpExchange exchange) throws IOException {
+		String requestMethod = exchange.getRequestMethod();
+		if (!requestMethod.equalsIgnoreCase("GET")) { // GET requests only.
+			return;
+		}
 
-  public void handle(HttpExchange exchange) throws IOException {
-    String requestMethod = exchange.getRequestMethod();
-    if (!requestMethod.equalsIgnoreCase("GET")) { // GET requests only.
-      return;
-    }
+		// Print the user request header.
+		Headers requestHeaders = exchange.getRequestHeaders();
+		System.out.print("Incoming request: ");
+		for (String key : requestHeaders.keySet()) {
+			System.out.print(key + ":" + requestHeaders.get(key) + "; ");
+		}
+		System.out.println();
 
-    // Print the user request header.
-    Headers requestHeaders = exchange.getRequestHeaders();
-    System.out.print("Incoming request: ");
-    for (String key : requestHeaders.keySet()) {
-      System.out.print(key + ":" + requestHeaders.get(key) + "; ");
-    }
-    System.out.println();
+		// Validate the incoming request.
+		String uriQuery = exchange.getRequestURI().getQuery();
+		String uriPath = exchange.getRequestURI().getPath();
+		if (uriPath == null || uriQuery == null) {
+			respondWithMsg(exchange, "Something wrong with the URI!");
+		}
+		else if (uriPath.equals("/prf") || uriPath.equals("/search")) {
+			System.out.println("Query: " + uriQuery);
 
-    // Validate the incoming request.
-    String uriQuery = exchange.getRequestURI().getQuery();
-    String uriPath = exchange.getRequestURI().getPath();
-    if (uriPath == null || uriQuery == null) {
-      respondWithMsg(exchange, "Something wrong with the URI!");
-    }
-    else if (uriPath.equals("/prf") || uriPath.equals("/search")) {
-    	System.out.println("Query: " + uriQuery);
+			// Process the CGI arguments.
+			CgiArguments cgiArgs = new CgiArguments(uriQuery);
+			if (cgiArgs._query.isEmpty()) {
+				respondWithMsg(exchange, "No query is given!");
+			}
 
-    	// Process the CGI arguments.
-    	CgiArguments cgiArgs = new CgiArguments(uriQuery);
-    	if (cgiArgs._query.isEmpty()) {
-    	  respondWithMsg(exchange, "No query is given!");
-    	}
+			// Create the ranker.
+			Ranker ranker = Ranker.Factory.getRankerByArguments(
+					cgiArgs, SearchEngine.OPTIONS, _indexer);
+			if (ranker == null) {
+				respondWithMsg(exchange,
+						"Ranker " + cgiArgs._rankerType.toString() + " is not valid!");
+			}
 
-    	// Create the ranker.
-    	Ranker ranker = Ranker.Factory.getRankerByArguments(
-    	    cgiArgs, SearchEngine.OPTIONS, _indexer);
-    	if (ranker == null) {
-    	  respondWithMsg(exchange,
-    	      "Ranker " + cgiArgs._rankerType.toString() + " is not valid!");
-    	}
+			// Processing the query.
+			QueryPhrase processedQuery = new QueryPhrase(cgiArgs._query);
+			processedQuery.processQuery();
 
-    	// Processing the query.
-    	QueryPhrase processedQuery = new QueryPhrase(cgiArgs._query);
-    	processedQuery.processQuery();
+			StringBuffer response = new StringBuffer();
+			if(uriPath.equals("/prf")){
+				List<Map.Entry<String, Double>> queryEapansion = ranker.psuedoRelevanceCalc(processedQuery, cgiArgs._numResults, cgiArgs._numterms);
+				constructPrfOutput(queryEapansion, response);
+			}
+			else{
+				// Ranking.
+				Vector<ScoredDocument> scoredDocs =
+						ranker.runQuery(processedQuery, cgiArgs._numResults);
+				switch (cgiArgs._outputFormat) {
+				case TEXT:
+					constructTextOutput(scoredDocs, response);
+					break;
+				case HTML:
+					// @CS2580: Plug in your HTML output
+					constructHtmlOutput(scoredDocs, response);
+					break;
+				default:
+					// nothing
+				}
+			}
+			respondWithMsg(exchange, response.toString());
+			System.out.println("Finished query: " + cgiArgs._query);
+		}
+		else{
+			respondWithMsg(exchange, "Only /search and /prf is handled!");
+		}
+	}
 
-    	StringBuffer response = new StringBuffer();
-    	if(uriPath.equals("/prf")){
-    		List<Map.Entry<String, Double>> queryEapansion = ranker.psuedoRelevanceCalc(processedQuery, cgiArgs._numResults, cgiArgs._numterms);
-    		constructPrfOutput(queryEapansion, response);
-    	}
-    	else{
-    		// Ranking.
-    		Vector<ScoredDocument> scoredDocs =
-    		    ranker.runQuery(processedQuery, cgiArgs._numResults);
-    		switch (cgiArgs._outputFormat) {
-    		case TEXT:
-    		  constructTextOutput(scoredDocs, response);
-    		  break;
-    		case HTML:
-    		  // @CS2580: Plug in your HTML output
-    		  break;
-    		default:
-    		  // nothing
-    		}
-    	}
-    	respondWithMsg(exchange, response.toString());
-    	System.out.println("Finished query: " + cgiArgs._query);
-    }
-    else{
-      respondWithMsg(exchange, "Only /search and /prf is handled!");
-    }
-  }
 }
+
 
