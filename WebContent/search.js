@@ -3,26 +3,14 @@
  */
 
 var myApp = angular.module('searchApp', []);
-myApp.directive('autoComplete', function($timeout) {
-  return function(scope, iElement, iAttrs) {
-          iElement.autocomplete({
-              source: scope[iAttrs.uiItems],
-              select: function() {
-                  $timeout(function() {
-                    iElement.trigger('input');
-                  }, 0);
-              }
-          });
-  };
-});
 myApp.controller('searchCtrl', function($scope, $http) {
-
-  $scope.names = ["john", "bill", "charlie", "robert", "alban", "oscar", "marie", "celine", "brad", "drew", "rebecca", "michel", "francis", "jean", "paul", "pierre", "nicolas", "alfred", "gerard", "louis", "albert", "edouard", "benoit", "guillaume", "nicolas", "joseph"];
 
 	  var xmlhttp;
 	  $scope.content = "";
+	  $scope.termLs = ["google", "yahoo", "apple", "facebook"];
     $scope.autoComplete = function(){
           console.log("type " + $scope.query);
+          // update $scope.termLs here
     };
     $scope.search = function(){
       console.log("search " + $scope.query);
