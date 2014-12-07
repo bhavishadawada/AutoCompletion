@@ -12,7 +12,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
     $scope.search = function(){
       console.log("search " + $scope.query);
       xmlhttp=new XMLHttpRequest();
-      xmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=html",true);
+      xmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=text",true);
       xmlhttp.onreadystatechange = handler;
       xmlhttp.send();
     };
