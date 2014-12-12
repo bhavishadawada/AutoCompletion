@@ -490,21 +490,22 @@ class TrieTree
 		}
 	}
 	
-	/*
 	public static void main(String[] args)
 	{
-		Trie t = new Trie();
-		System.out.println(t.remove("test"));
-		System.out.println(t.isEntry("isEntry"));
-		t.getAll();
-		System.out.println(t.size());
-		System.out.println(t.suggest("b").length);
-		t.add("ra");
-		t.add("aw");
-		System.out.println(t.censor("rawr"));
-		t.add("rawr");
-		System.out.println(t.censor("rawr"));
-	}//*/
+		TrieTree tt = new TrieTree(false);
+		tt.add("york");
+		tt.add("year");
+		tt.add("yes");
+		tt.add("yeah");
+		System.out.println("suggest y:");
+		for(String s : tt.suggest("y")){
+			System.out.println(s);
+		}
+		System.out.println("suggest ye:");
+		for(String s : tt.suggest("ye")){
+			System.out.println(s);
+		}
+	}
 
 	private Node root;
 	private int size;
