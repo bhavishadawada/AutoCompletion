@@ -15,7 +15,9 @@
 		  <option ng-repeat="term in termLs" value="{{term}}">
 		</datalist>
         <button ng-click="search()">search</button>
-        <pre>{{content}}</pre>
+        <div ng-repeat="web in webList">
+        <a href='{{"file://localhost/Users/angieyayabird/Sites/wiki/" + web.title}}'>{{web.title}}</a>
+        </div>
 </div>
 </body>
 </html>

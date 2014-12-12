@@ -30,7 +30,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
     $scope.search = function(){
       console.log("search " + $scope.query);
       xmlhttp=new XMLHttpRequest();
-      xmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=text",true);
+      xmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=json",true);
       xmlhttp.onreadystatechange = handler;
       xmlhttp.send();
     };
@@ -39,6 +39,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
       if (xmlhttp.readyState==4 && xmlhttp.status==200)
       {
       	$scope.content = xmlhttp.responseText;
+      	$scope.webList = angular.fromJson(xmlhttp.responseText);
      		$scope.$apply();
       }
     }

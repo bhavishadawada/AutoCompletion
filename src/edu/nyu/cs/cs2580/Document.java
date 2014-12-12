@@ -20,8 +20,8 @@ class Document implements Serializable {
   public int _docid;
 
   // Basic information for display
-  private String _title = "";
-  private String _url = "";
+  public String _title = "";
+  public String _url = "";
   
   int[] termId;
   int[] termFrequency;

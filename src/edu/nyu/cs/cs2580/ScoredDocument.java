@@ -1,4 +1,5 @@
 package edu.nyu.cs.cs2580;
+import org.json.simple.JSONObject;
 
 /**
  * Document with score.
@@ -42,6 +43,14 @@ class ScoredDocument implements Comparable<ScoredDocument> {
 			sb.append("</body></html>");
 		}
 		return sb.toString();
+  }
+  
+  public JSONObject asJsonResult(){
+	  JSONObject obj = new JSONObject(); 
+	  obj.put("title", _doc._title);
+	  obj.put("docid", _doc._docid);
+	  obj.put("url", _doc._url);
+	  return obj;
   }
   
   public Document getDocument(){

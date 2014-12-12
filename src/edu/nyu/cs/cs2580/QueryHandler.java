@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -53,6 +56,7 @@ class QueryHandler implements HttpHandler {
     public enum OutputFormat {
       TEXT,
       HTML,
+      JSON,
     }
     public OutputFormat _outputFormat = OutputFormat.TEXT;
 
@@ -137,6 +141,14 @@ class QueryHandler implements HttpHandler {
 		}
 		response.append(response.length() > 0 ? "\n" : "");
 	}
+	
+	private void constructJsonOutput(final Vector<ScoredDocument> docs, StringBuffer response){
+		JSONArray arr = new JSONArray();
+		for(ScoredDocument doc : docs){
+			arr.add(doc.asJsonResult());
+		}
+		response.append(arr.toJSONString());
+	}
 
 	public void handle(HttpExchange exchange) throws IOException {
 		String requestMethod = exchange.getRequestMethod();
@@ -196,6 +208,8 @@ class QueryHandler implements HttpHandler {
 					// @CS2580: Plug in your HTML output
 					constructHtmlOutput(scoredDocs, response);
 					break;
+				case JSON:
+					constructJsonOutput(scoredDocs, response);
 				default:
 					// nothing
 				}
