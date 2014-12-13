@@ -242,4 +242,10 @@ public int documentTotalTermFrequency(int docid) {
 	return 0;
 }
 
+@Override
+public String[] suggest(String prefix, int num) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
 }

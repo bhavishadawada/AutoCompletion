@@ -12,14 +12,14 @@ public class WordTree {
 	private int maxDepth; // Not exact, but bounding for the maximum
 	private HashMap<String, Integer> dictionary;
 	private ArrayList<String> termLs;
-	
+
 	public WordTree(){
 		root = new Node(-1);
 		size = 0;
 		termLs = new ArrayList<String>();
 		dictionary = new HashMap<String, Integer>();
 	}
-	
+
 	public int[] wordLsToIdLs(String[] wordLs, boolean add){
 		int[] idLs = new int[wordLs.length];
 		for(int i = 0; i < wordLs.length; i++){
@@ -40,7 +40,7 @@ public class WordTree {
 		}
 		return idLs;
 	}
-	
+
 	public String[] idLsToWordLs(int[] idLs){
 		String[] wordLs = new String[idLs.length];
 		for(int i = 0; i < idLs.length; i++){
@@ -52,21 +52,21 @@ public class WordTree {
 		}
 		return wordLs;
 	}
-	
+
 	public boolean add(String query){
 		// add an extra node with "\t" at the end
 		// such that the tree can suggest both "new york" and "new york city" 
 		query = query + " \t";
 		return add(query.split(" "));
 	}
-	
+
 	public boolean add(String[] wordLs){
 		if (wordLs.length == 0)
 			throw new IllegalArgumentException("wordLs can't be empty");
 		int[] idLs = wordLsToIdLs(wordLs, true);
 		return add(idLs);
 	}
-	
+
 	public boolean add(int[] idLs)
 	{
 		if (idLs.length == 0)
@@ -80,13 +80,13 @@ public class WordTree {
 		}
 		return false;
 	}
-	
+
 	public void addAll(int[][] idArr)
 	{
 		for (int[] idLs: idArr)
 			add(idLs);
 	}
-	
+
 	private boolean add(Node root, int[] idLs, int offset)
 	{
 		root.freq++;
@@ -140,7 +140,7 @@ public class WordTree {
 		
 		return true;
 	}
-	
+
 	private void getAll(Node root, ArrayList<Item> itemLs, int[] idLs, int pointer)
 	{
 		Node n = root.firstChild;
@@ -163,7 +163,7 @@ public class WordTree {
 	{
 		return size;
 	}
-	
+
 	public List<String> suggest(String query){
 		String[] wordLs = query.split(" ");
 		String[][] wordArr = suggest(wordLs);
@@ -180,7 +180,11 @@ public class WordTree {
 		}
 		return suggestLs;
 	}
-	
+
+	/*
+	 * Recursive function for finding all words starting with the given prefix
+	 */
+
 	public String[][] suggest(String[] wordLs){
 		int[] idLs = wordLsToIdLs(wordLs, false);
 		int[][] idArr = suggest(idLs);
@@ -193,12 +197,12 @@ public class WordTree {
 		}
 		return wordArr.toArray(new String[wordArr.size()][]);
 	}
-	
+
 	public int[][] suggest(int[] idLs)
 	{
 		return suggest(root, idLs, 0);
 	}
-	
+
 	private int[][] suggest(Node root, int[] idLs, int offset)
 	{
 		if (offset == idLs.length)
@@ -228,7 +232,7 @@ public class WordTree {
 		return new int[][] { idLs};
 	}
 
-	
+
 	private class Node
 	{
 		public int id;
@@ -244,7 +248,7 @@ public class WordTree {
 			nextSibling = null;
 		}
 	}
-	
+
 	private class Item implements Comparable{
 		public int freq;
 		int[] idLs;
@@ -257,7 +261,7 @@ public class WordTree {
 			// TODO Auto-generated method stub
 			return ((Item)o).freq - this.freq;
 		}
-		
+
 		public String toString(){
 			StringBuffer sb = new StringBuffer();
 			sb.append(freq);
@@ -267,9 +271,10 @@ public class WordTree {
 			}
 			return sb.toString();
 		}
+
 	}
-	
-	
+
+
 	static public void main(String[] args){
 		WordTree wt = new WordTree();
 		wt.add("new york");

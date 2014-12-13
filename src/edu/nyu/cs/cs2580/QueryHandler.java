@@ -61,7 +61,10 @@ class QueryHandler implements HttpHandler {
     public OutputFormat _outputFormat = OutputFormat.TEXT;
 
     public int _numterms = 0;
-
+    
+    // to store userId to maintain user session query log
+    public int _userId = 0 ; 
+    
     public CgiArguments(String uriQuery) {
       String[] params = uriQuery.split("&");
       for (String param : params) {
@@ -94,6 +97,9 @@ class QueryHandler implements HttpHandler {
         } else if(key.equals("numterms")){
         	_numterms = Integer.parseInt(val);
         }
+        else if(key.equals("userid")){
+        	_userId = Integer.parseInt(val);
+        }
       }  // End of iterating over params
     }
   }
@@ -101,7 +107,8 @@ class QueryHandler implements HttpHandler {
 	// we are not worried about thread-safety here, the Indexer class must take
 	// care of thread-safety.
 	private Indexer _indexer;
-
+	
+	
 	public QueryHandler(Options options, Indexer indexer) {
 		_indexer = indexer;
 	}
@@ -188,7 +195,7 @@ class QueryHandler implements HttpHandler {
 			if (cgiArgs._query.isEmpty()) {
 				respondWithMsg(exchange, "No query is given!");
 			}
-
+						
 			// Create the ranker.
 			Ranker ranker = Ranker.Factory.getRankerByArguments(
 					cgiArgs, SearchEngine.OPTIONS, _indexer);
@@ -226,6 +233,10 @@ class QueryHandler implements HttpHandler {
 			}
 			respondWithMsg(exchange, response.toString());
 			System.out.println("Finished query: " + cgiArgs._query);
+			
+			// Write to the user session 
+			QueryLogger.addQuery(cgiArgs._userId, cgiArgs._query);
+			
 		}
 		else if(uriPath.equals("/suggest")){
 			StringBuffer response = new StringBuffer();
@@ -238,6 +249,10 @@ class QueryHandler implements HttpHandler {
 			System.out.println("suggest prefix " + cgiArgs._query);
 			Ranker ranker = Ranker.Factory.getRankerByArguments(
 					cgiArgs, SearchEngine.OPTIONS, _indexer);
+			
+			
+			
+			// Write all the signals into other class and call the function here
 			String[] wordArr = ranker.suggest(cgiArgs._query, 10);
 			System.out.println("wordArr.length " + wordArr.length);
 			for(String word : wordArr){
@@ -245,6 +260,13 @@ class QueryHandler implements HttpHandler {
 			}
 			constructSuggestOutput(wordArr, response);
 			respondWithMsg(exchange, response.toString());
+		}
+		// to return the id if the user is interacting for the first time
+		else if(uriPath.equals("/getId")){
+			Integer userId = QueryLogger.getLogger().size() + 1; 
+			QueryLogger.getLogger().put(userId, new WordTree());
+			System.out.println(QueryLogger.getLogger().size());
+			respondWithMsg(exchange, userId.toString());
 		}
 		else{
 			respondWithMsg(exchange, "Only /search and /prf is handled!");
