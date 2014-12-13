@@ -47,7 +47,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
     $scope.suggest = function(){
       console.log("type " + $scope.query);
       suggestXmlhttp=new XMLHttpRequest();
-      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+$scope.query+"userId="+userId+"&ranker=favorite&format=json&num=10",true);
+      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+$scope.query+"&userId="+userId+"&ranker=favorite&format=json&num=10",true);
       suggestXmlhttp.onreadystatechange = suggestHandler;
       suggestXmlhttp.send();
     };
