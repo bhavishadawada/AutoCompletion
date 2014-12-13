@@ -2,7 +2,9 @@ package edu.nyu.cs.cs2580;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class WordTree {
 	private Node root;
@@ -51,6 +53,10 @@ public class WordTree {
 		return wordLs;
 	}
 	
+	public boolean add(String query){
+		return add(query.split(" "));
+	}
+	
 	public boolean add(String[] wordLs){
 		if (wordLs.length == 0)
 			throw new IllegalArgumentException("wordLs can't be empty");
@@ -80,6 +86,7 @@ public class WordTree {
 	
 	private boolean add(Node root, int[] idLs, int offset)
 	{
+		root.freq++;
 		if (offset == idLs.length) return false;
 		int c = idLs[offset];
 
@@ -105,6 +112,7 @@ public class WordTree {
 
 		// No match found, create a new node and insert
 		Node node = new Node(c);
+		node.freq++;
 		if (last == null)
 		{
 			// Insert node at the beginning of the list (Works for next == null
@@ -124,11 +132,12 @@ public class WordTree {
 		{
 			node.firstChild = new Node(idLs[i]);
 			node = node.firstChild;
+			node.freq++;
 		}
 		return true;
 	}
 	
-	private void getAll(Node root, ArrayList<int[]> idArr, int[] idLs, int pointer)
+	private void getAll(Node root, ArrayList<Item> itemLs, int[] idLs, int pointer)
 	{
 		Node n = root.firstChild;
 		while (n != null)
@@ -136,11 +145,11 @@ public class WordTree {
 			idLs[pointer] = n.id;
 			if (n.firstChild == null)
 			{
-				idArr.add(Arrays.copyOfRange(idLs, 0, pointer+1));
+				itemLs.add(new Item(n.freq, Arrays.copyOfRange(idLs, 0, pointer+1)));
 			}
 			else
 			{
-				getAll(n, idArr, idLs, pointer + 1);
+				getAll(n, itemLs, idLs, pointer + 1);
 			}
 			n = n.nextSibling;
 		}
@@ -149,6 +158,23 @@ public class WordTree {
 	public int size()
 	{
 		return size;
+	}
+	
+	public List<String> suggest(String query){
+		String[] wordLs = query.split(" ");
+		String[][] wordArr = suggest(wordLs);
+		List<String> suggestLs = new ArrayList<String>(wordArr.length);
+		for(int i = 0; i < wordArr.length; i++){
+			StringBuffer sb = new StringBuffer();
+			String[] ls = wordArr[i];
+			for(int j = 0; j < ls.length; j++){
+				if(j > 0)
+					sb.append(" ");
+				sb.append(ls[j]);
+			}
+			suggestLs.add(sb.toString());
+		}
+		return suggestLs;
 	}
 	
 	public String[][] suggest(String[] wordLs){
@@ -173,12 +199,17 @@ public class WordTree {
 	{
 		if (offset == idLs.length)
 		{
-			ArrayList<int[]> idArr = new ArrayList<int[]>(size);
+			ArrayList<Item> itemLs = new ArrayList<Item>(size);
 			int[] newIdLs = new int[maxDepth];
 			for (int i = 0; i < offset; i++)
 				newIdLs[i] = idLs[i];
-			getAll(root, idArr, newIdLs, offset);
-			return idArr.toArray(new int[idArr.size()][]);
+			getAll(root, itemLs, newIdLs, offset);
+			Collections.sort(itemLs);
+			int[][] idArr = new int[itemLs.size()][];
+			for(int i = 0; i < itemLs.size(); i++){
+				idArr[i] = itemLs.get(i).idLs;
+			}
+			return idArr;
 		}
 		int c = idLs[offset];
 
@@ -197,16 +228,43 @@ public class WordTree {
 	private class Node
 	{
 		public int id;
+		public int freq;
 		public Node firstChild;
 		public Node nextSibling;
 
 		public Node(int id)
 		{
 			this.id = id;
+			freq = 0;
 			firstChild = null;
 			nextSibling = null;
 		}
 	}
+	
+	private class Item implements Comparable{
+		public int freq;
+		int[] idLs;
+		public Item(int freq, int[] idLs){
+			this.freq = freq;
+			this.idLs = idLs;
+		}
+		@Override
+		public int compareTo(Object o) {
+			// TODO Auto-generated method stub
+			return ((Item)o).freq - this.freq;
+		}
+		
+		/*
+		public String toString(){
+			StringBuffer sb = new StringBuffer();
+			sb.append(freq);
+			for(int id : idLs){
+				System.out.print(" " + );
+			}
+		}
+		*/
+	}
+	
 	
 	static public void main(String[] args){
 		WordTree wt = new WordTree();
