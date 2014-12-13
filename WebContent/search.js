@@ -22,11 +22,32 @@ myApp.controller('searchCtrl', function($scope, $http) {
 
 	  var searchXmlhttp;
 	  var suggestXmlhttp;
+	  var userId;
+
+	  if (typeof(Storage) != "undefined") {
+      userId = localStorage.getItem("userId");
+      console.log("from localStorage get userId: " + userId);
+    }
+    if (userId == null) {
+    	var xmlhttp = new XMLHttpRequest();
+    	xmlhttp.open("GET","http://localhost:25811/getId?query=test", true);
+    	xmlhttp.onreadystatechange = function(){
+    		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+      	userId = xmlhttp.responseText;
+     		$scope.$apply();
+     		localStorage.setItem("userId", userId);
+     		console.log("from server get userId: " + userId);
+        }
+    	};
+    	xmlhttp.send();
+    }
+
 	  $scope.suggestList = [];
     $scope.suggest = function(){
       console.log("type " + $scope.query);
       suggestXmlhttp=new XMLHttpRequest();
-      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+$scope.query+"&ranker=favorite&format=json&num=10",true);
+      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+$scope.query+"userId="+userId+"&ranker=favorite&format=json&num=10",true);
       suggestXmlhttp.onreadystatechange = suggestHandler;
       suggestXmlhttp.send();
     };
