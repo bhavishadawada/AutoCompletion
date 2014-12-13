@@ -1,11 +1,11 @@
 package edu.nyu.cs.cs2580;
 
-public class TrieTree {
+public class TrieTree2 {
 
 	private TrieNode root = null; 
 	
 	// constructor to create the tree
-	public TrieTree(){
+	public TrieTree2(){
 	}
 	
 	public static void inserWord(TrieNode root , String word){

@@ -11,6 +11,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,8 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	*/
 	private IndexerInvertedOccurrence _occurIndex;
 	private ArrayList<PostListCompressed> _postListCompressed; 
+	
+	private TrieTree _trieTree;
 	
 	// use buffer of post list to reduce file IO
 	private HashMap<String, PostListOccurence> _postListBuf = 
@@ -116,6 +120,17 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	    writer.close();
   }
   
+  class TermFreqComparator implements Comparator<String>{
+		public int compare(String s0, String s1) {
+			return _corpusTermFrequency.get(_dictionary.get(s1)) - _corpusTermFrequency.get(_dictionary.get(s0));
+		}
+  }
+  public String[] suggest(String prefix, int num){
+	  String[] arr = this._trieTree.suggest(prefix);
+	  Arrays.sort(arr, new TermFreqComparator());
+	  return Arrays.copyOfRange(arr, 0, Math.min(arr.length, num));
+  }
+  
 	
   @Override
   public void loadIndex() throws IOException, ClassNotFoundException {
@@ -132,6 +147,10 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	    this._corpusTermFrequency = loaded._corpusTermFrequency;
 	    this._documentTermFrequency = loaded._documentTermFrequency;
 	    this._termLs = loaded._termLs2;
+
+	    this._trieTree = new TrieTree(false);
+	    this._trieTree.addAll(this._termLs.toArray(new String[this._termLs.size()]));
+
 	    for (Integer freq : loaded._corpusTermFrequency) {
 	        this._totalTermFrequency += freq;
 	    }

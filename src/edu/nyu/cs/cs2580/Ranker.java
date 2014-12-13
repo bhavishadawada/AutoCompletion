@@ -82,6 +82,10 @@ public abstract class Ranker {
 		System.out.println("results size:" + results.size());
 		return results;
 	}
+	
+	public String[] suggest(String prefix, int num){
+		return _indexer.suggest(prefix, num);
+	}
 
 	public List<Map.Entry<String, Double>> psuedoRelevanceCalc(QueryPhrase query, int numResults , int numTerms){
 

@@ -139,6 +139,8 @@ public abstract class Indexer  {
   
   public abstract int documentTotalTermFrequency(int docid);
 
+  public abstract String[] suggest(String prefix, int num);
+
   /**
    * All Indexers must be created through this factory class based on the
    * provided {@code options}.
@@ -157,4 +159,5 @@ public abstract class Indexer  {
       return null;
     }
   }
+
 }

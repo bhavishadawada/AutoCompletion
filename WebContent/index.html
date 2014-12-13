@@ -5,18 +5,23 @@
 <title>Search</title>
   <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
   <script src="search.js"></script>
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script src="bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div ng-app="searchApp" ng-controller="searchCtrl">
         <h1>Search</h1>
         <input type="text" ng-model="query"  size="30"
-        placeholder="What needs to be search?" ng-keyup="autoComplete()" list="datalist" ng-enter="search()"/>   
+        placeholder="What needs to be search?" ng-keyup="suggest()" list="datalist" ng-enter="search()"/>   
 		<datalist id="datalist">
-		  <option ng-repeat="term in termLs" value="{{term}}">
+		  <option ng-repeat="suggest in suggestList" value="{{suggest.term}}">
 		</datalist>
         <button ng-click="search()">search</button>
         <div ng-repeat="web in webList">
         <a href='{{"file://localhost/Users/angieyayabird/Sites/wiki/" + web.title}}'>{{web.title}}</a>
+        </div>
+        <div ng-repeat="suggest in suggestList">
+        {{suggest.term}}
         </div>
 </div>
 </body>

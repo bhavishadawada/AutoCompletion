@@ -124,6 +124,16 @@ class QueryHandler implements HttpHandler {
 			response.append(entry.getKey() + "\t" + entry.getValue());
 		}
 	}
+	
+	private void constructSuggestOutput(String[] termArr, StringBuffer response){
+		JSONArray arr = new JSONArray();
+		for(String term : termArr){
+			JSONObject obj = new JSONObject();
+			obj.put("term", term);
+			arr.add(obj);
+		}
+		response.append(arr.toJSONString());
+	}
 
 	private void constructTextOutput(
 			final Vector<ScoredDocument> docs, StringBuffer response) {
@@ -216,6 +226,25 @@ class QueryHandler implements HttpHandler {
 			}
 			respondWithMsg(exchange, response.toString());
 			System.out.println("Finished query: " + cgiArgs._query);
+		}
+		else if(uriPath.equals("/suggest")){
+			StringBuffer response = new StringBuffer();
+
+			// Process the CGI arguments.
+			CgiArguments cgiArgs = new CgiArguments(uriQuery);
+			if (cgiArgs._query.isEmpty()) {
+				respondWithMsg(exchange, "No query is given!");
+			}
+			System.out.println("suggest prefix " + cgiArgs._query);
+			Ranker ranker = Ranker.Factory.getRankerByArguments(
+					cgiArgs, SearchEngine.OPTIONS, _indexer);
+			String[] wordArr = ranker.suggest(cgiArgs._query, 10);
+			System.out.println("wordArr.length " + wordArr.length);
+			for(String word : wordArr){
+				System.out.println(word);
+			}
+			constructSuggestOutput(wordArr, response);
+			respondWithMsg(exchange, response.toString());
 		}
 		else{
 			respondWithMsg(exchange, "Only /search and /prf is handled!");

@@ -20,27 +20,38 @@ myApp.directive('ngEnter', function () {
 
 myApp.controller('searchCtrl', function($scope, $http) {
 
-	  var xmlhttp;
-	  $scope.content = "";
-	  $scope.termLs = ["google", "yahoo", "apple", "facebook"];
-    $scope.autoComplete = function(){
-          console.log("type " + $scope.query);
-          // update $scope.termLs here
+	  var searchXmlhttp;
+	  var suggestXmlhttp;
+	  $scope.suggestList = [];
+    $scope.suggest = function(){
+      console.log("type " + $scope.query);
+      suggestXmlhttp=new XMLHttpRequest();
+      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+$scope.query+"&ranker=favorite&format=json&num=10",true);
+      suggestXmlhttp.onreadystatechange = suggestHandler;
+      suggestXmlhttp.send();
     };
     $scope.search = function(){
       console.log("search " + $scope.query);
-      xmlhttp=new XMLHttpRequest();
-      xmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=json",true);
-      xmlhttp.onreadystatechange = handler;
-      xmlhttp.send();
+      searchXmlhttp=new XMLHttpRequest();
+      searchXmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=json&num=30",true);
+      searchXmlhttp.onreadystatechange = searchHandler;
+      searchXmlhttp.send();
     };
     
-    function handler(){
-      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    function searchHandler(){
+      if (searchXmlhttp.readyState==4 && searchXmlhttp.status==200)
       {
-      	$scope.content = xmlhttp.responseText;
-      	$scope.webList = angular.fromJson(xmlhttp.responseText);
+      	$scope.webList = angular.fromJson(searchXmlhttp.responseText);
      		$scope.$apply();
+      }
+    }
+
+    function suggestHandler(){
+      if (suggestXmlhttp.readyState==4 && suggestXmlhttp.status==200)
+      {
+      	$scope.suggestList = angular.fromJson(suggestXmlhttp.responseText);
+     		$scope.$apply();
+     		console.log($scope.suggestList);
       }
     }
 });
