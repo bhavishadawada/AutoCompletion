@@ -54,6 +54,9 @@ public class WordTree {
 	}
 	
 	public boolean add(String query){
+		// add an extra node with "\t" at the end
+		// such that the tree can suggest both "new york" and "new york city" 
+		query = query + " \t";
 		return add(query.split(" "));
 	}
 	
@@ -134,6 +137,7 @@ public class WordTree {
 			node = node.firstChild;
 			node.freq++;
 		}
+		
 		return true;
 	}
 	
@@ -254,30 +258,30 @@ public class WordTree {
 			return ((Item)o).freq - this.freq;
 		}
 		
-		/*
 		public String toString(){
 			StringBuffer sb = new StringBuffer();
 			sb.append(freq);
 			for(int id : idLs){
-				System.out.print(" " + );
+				sb.append(" ");
+				sb.append(termLs.get(id));
 			}
+			return sb.toString();
 		}
-		*/
 	}
 	
 	
 	static public void main(String[] args){
 		WordTree wt = new WordTree();
-		wt.add(new String[] {"new", "york"});
-		wt.add(new String[] {"new", "york", "city"});
-		wt.add(new String[] {"new", "year"});
-		wt.add(new String[] {"new", "shoes"});
-		String[][] wordArr = wt.suggest(new String[] {"new"});
-		for(String[] wordLs : wordArr){
-			for(String word : wordLs){
-				System.out.print(word + " ");
-			}
-			System.out.println();
+		wt.add("new york");
+		wt.add("new york");
+		wt.add("new york city");
+		wt.add("new york city");
+		wt.add("new york city");
+		wt.add("new year");
+		wt.add("new shoes");
+		List<String> wordArr = wt.suggest("new");
+		for(String wordLs : wordArr){
+			System.out.println(wordLs);
 		}
 	}
 }
