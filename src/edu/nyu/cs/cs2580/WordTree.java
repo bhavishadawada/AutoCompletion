@@ -82,7 +82,21 @@ public class WordTree {
 	{
 		if (idLs.length == 0)
 			throw new IllegalArgumentException("idLs can't be empty");
-		if (add(root, idLs, 0))
+		if (add(root, idLs, 0, 1))
+		{
+			size++;
+			int n = idLs.length;
+			if (n > maxDepth) maxDepth = n;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean add(int[] idLs, int freq)
+	{
+		if (idLs.length == 0)
+			throw new IllegalArgumentException("idLs can't be empty");
+		if (add(root, idLs, 0, freq))
 		{
 			size++;
 			int n = idLs.length;
@@ -98,9 +112,9 @@ public class WordTree {
 			add(idLs);
 	}
 
-	private boolean add(Node root, int[] idLs, int offset)
+	private boolean add(Node root, int[] idLs, int offset, int freq)
 	{
-		root.freq++;
+		root.freq += freq;
 		if (offset == idLs.length) return false;
 		int c = idLs[offset];
 
@@ -117,7 +131,7 @@ public class WordTree {
 			else if (next.id == c)
 			{
 				// Match found, add remaining word to this node
-				return add(next, idLs, offset + 1);
+				return add(next, idLs, offset + 1, freq);
 			}
 			// Because of the ordering of the list getting here means we won't
 			// find a match
@@ -126,7 +140,7 @@ public class WordTree {
 
 		// No match found, create a new node and insert
 		Node node = new Node(c);
-		node.freq++;
+		node.freq += freq;
 		if (last == null)
 		{
 			// Insert node at the beginning of the list (Works for next == null
@@ -146,7 +160,7 @@ public class WordTree {
 		{
 			node.firstChild = new Node(idLs[i]);
 			node = node.firstChild;
-			node.freq++;
+			node.freq += freq;
 		}
 		
 		return true;
@@ -290,17 +304,19 @@ public class WordTree {
 		int i = 0;
 		WordTree wt = new WordTree();
 		while(i < ls.length){
+			if(ls[i].length() == 0)
+				break; // ignore empty string
 			int freq = Integer.parseInt(ls[i]);
 			i++;
 			int len = Integer.parseInt(ls[i]);
 			i++;
-			System.out.println(freq + " " + len);
-			int[] idLs = new int[len];
+			int[] idLs = new int[len + 1];
+			idLs[len] = -1; // add extra node indicate this is the end of the word list
 			for(int j = 0; j < len; j++){
 				idLs[j] = Integer.parseInt(ls[i]);
 				i++;
 			}
-			wt.add(idLs);
+			wt.add(idLs, freq);
 		}
 		return wt;
 	}
@@ -392,8 +408,9 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-		System.out.println(wt.convertTreeToString(2));
-		WordTree wt2 = genTree(wt.convertTreeToString(2));
+		String str = wt.convertTreeToString(5);
+		System.out.println(str);
+		WordTree wt2 = genTree(str);
 		System.out.println(wt2.convertTreeToString(0));
 	}
 }
