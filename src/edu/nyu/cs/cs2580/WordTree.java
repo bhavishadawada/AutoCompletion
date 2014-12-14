@@ -300,9 +300,14 @@ public class WordTree {
 	}
 	
 	public static WordTree genTree(String str){
+		WordTree wt = new WordTree();
+		mergeTree(wt, str);
+		return wt;
+	}
+	
+	public static void mergeTree(WordTree wt, String str){
 		String[] ls = str.split(" ");
 		int i = 0;
-		WordTree wt = new WordTree();
 		while(i < ls.length){
 			if(ls[i].length() == 0)
 				break; // ignore empty string
@@ -318,7 +323,6 @@ public class WordTree {
 			}
 			wt.add(idLs, freq);
 		}
-		return wt;
 	}
 	
 	public String convertTreeToString(int threshold){
@@ -408,7 +412,7 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-		String str = wt.convertTreeToString(5);
+		String str = wt.convertTreeToString(0);
 		System.out.println(str);
 		WordTree wt2 = genTree(str);
 		System.out.println(wt2.convertTreeToString(0));
