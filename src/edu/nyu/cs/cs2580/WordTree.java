@@ -1,5 +1,8 @@
 package edu.nyu.cs.cs2580;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -153,13 +156,13 @@ public class WordTree {
 		Node n = root.firstChild;
 		while (n != null)
 		{
-			idLs[pointer] = n.id;
 			if (n.firstChild == null)
 			{
-				itemLs.add(new Item(n.freq, Arrays.copyOfRange(idLs, 0, pointer+1)));
+				itemLs.add(new Item(n.freq, Arrays.copyOfRange(idLs, 0, pointer)));
 			}
 			else
 			{
+				idLs[pointer] = n.id;
 				getAll(n, itemLs, idLs, pointer + 1);
 			}
 			n = n.nextSibling;
@@ -280,7 +283,37 @@ public class WordTree {
 		}
 
 	}
+	
+	/*
+	public void writeFile(String file, String delimiter, String quoteMark) throws IOException
+	{
+		BufferedWriter out = new BufferedWriter(new FileWriter(file));
+		char[] c = new char[maxDepth];
+		writeNode(root, out, c, 0, quoteMark, quoteMark + delimiter);
+		out.close();
+	}
 
+	private static void writeNode(Node root, java.io.BufferedWriter out, char[] chars, int pointer, String pre, String post) throws java.io.IOException
+	{
+		Node n = root.firstChild;
+		while (n != null)
+		{
+			if (n.firstChild == null)
+			{
+				out.write(pre);
+				out.write(new String(chars, 0, pointer));
+				out.write(post);
+			}
+			else
+			{
+				chars[pointer] = (char)n.value;
+				writeNode(n, out, chars, pointer + 1, pre, post);
+			}
+			n = n.nextSibling;
+		}
+	}
+	*/
+	
 
 	static public void main(String[] args){
 		WordTree wt = new WordTree();
