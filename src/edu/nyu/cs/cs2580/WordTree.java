@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Arrays;
 
 public class WordTree {
 	private Node root;
@@ -287,19 +288,25 @@ public class WordTree {
 	public String toString(int threshold){
 		StringBuffer out = new StringBuffer();
 		int[] idLs = new int[maxDepth];
-		nodeToString(root, out, idLs, 0, "", "\n");
+		nodeToString(root, out, idLs, 0, "", ",", threshold);
 		return out.toString();
 	}
 	
-	private static void nodeToString(Node root, StringBuffer out, int[] idLs, int pointer, String pre, String post ){
+	private static void nodeToString(Node root, StringBuffer out, int[] idLs, int pointer, String pre, String post, int threshold){
 		Node n = root.firstChild;
 		while (n != null)
 		{
-			if (n.firstChild == null)
+			if(n.freq < threshold){
+				//trim
+			}
+			else if (n.firstChild == null)
 			{
+				// freq len idLS
 				out.append(pre);
 				out.append(Integer.toString(n.freq));
-				out.append("\t");
+				out.append(" ");
+				out.append(Integer.toString(pointer));
+				out.append(" ");
 				for(int i = 0; i < pointer; i++){
 					if(i > 0)
 						out.append(" ");
@@ -310,7 +317,7 @@ public class WordTree {
 			else
 			{
 				idLs[pointer] = n.id;
-				nodeToString(n, out, idLs, pointer + 1, pre, post);
+				nodeToString(n, out, idLs, pointer + 1, pre, post, threshold);
 			}
 			n = n.nextSibling;
 		}
@@ -358,12 +365,13 @@ public class WordTree {
 		wt.add("new york city");
 		wt.add("new york city");
 		wt.add("new york city");
+		wt.add("new york city");
 		wt.add("new year");
 		wt.add("new shoes");
 		List<String> wordArr = wt.suggest("new");
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-		System.out.println(wt.toString(10));
+		System.out.println(wt.toString(2));
 	}
 }
