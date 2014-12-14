@@ -157,6 +157,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 			String termArray[] = new String[5];
 			wordTree.add((bodyTermVector.subList(tokenIndex, tokenIndex + 5)).toArray(termArray));
 			_wordTreeDictionary.put(token, wordTree);
+
 			if(termFrequencyMap.containsKey(id)){
 				termFrequencyMap.put(id, termFrequencyMap.get(id) + 1);
 			}

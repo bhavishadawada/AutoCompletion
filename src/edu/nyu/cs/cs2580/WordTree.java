@@ -284,6 +284,38 @@ public class WordTree {
 
 	}
 	
+	public String toString(int threshold){
+		StringBuffer out = new StringBuffer();
+		int[] idLs = new int[maxDepth];
+		nodeToString(root, out, idLs, 0, "", "\n");
+		return out.toString();
+	}
+	
+	private static void nodeToString(Node root, StringBuffer out, int[] idLs, int pointer, String pre, String post ){
+		Node n = root.firstChild;
+		while (n != null)
+		{
+			if (n.firstChild == null)
+			{
+				out.append(pre);
+				out.append(Integer.toString(n.freq));
+				out.append("\t");
+				for(int i = 0; i < pointer; i++){
+					if(i > 0)
+						out.append(" ");
+					out.append(Integer.toString(idLs[i]));
+				}
+				out.append(post);
+			}
+			else
+			{
+				idLs[pointer] = n.id;
+				nodeToString(n, out, idLs, pointer + 1, pre, post);
+			}
+			n = n.nextSibling;
+		}
+	}
+	
 	public void writeFile(String file, String delimiter, String quoteMark) throws IOException
 	{
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
@@ -332,6 +364,6 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-		wt.writeFile("test.txt", "\n", "");
+		System.out.println(wt.toString(10));
 	}
 }
