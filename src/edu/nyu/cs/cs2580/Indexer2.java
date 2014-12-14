@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import edu.nyu.cs.cs2580.SearchEngine.Options;
 
 public abstract class Indexer2 extends Indexer implements Serializable{
-	  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5380744807563119350L;
@@ -27,7 +27,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 	// Data structure to maintain unique terms with id
 	Map<String, Integer> _dictionary = new HashMap<String, Integer>();
-	
+
 	ArrayList<String> _termLs2;
 
 	// Data structure to store number of times a term occurs in Document
@@ -45,26 +45,29 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 	// Stores all Document in memory.
 	List<DocumentIndexed> _documents = new ArrayList<DocumentIndexed>();
-	
+
 	double[] pageRankLs;
 
 	int[] numViewLs;
 
+	// DS to store word tree for everyword
+	private Map<String , WordTree> _wordTreeDictionary = new HashMap<String, WordTree>();
+
 	public Indexer2() { }
 	public Indexer2(Options options) {
-	  super(options);
+		super(options);
 	}
 
 	protected abstract void buildMapFromTokens(List<String> uniqueTermSet, int docId);
 
 	protected abstract void writeFileHelper(Boolean record) throws IOException;
-	
+
 	protected abstract void clearCharMap();
-	
+
 	protected abstract boolean isEmptyCharMap();
-	
+
 	protected abstract void mergeAll()throws IOException;
-	
+
 	@Override
 	public void constructIndex() throws IOException {
 		String corpusFile = _options._corpusPrefix;
@@ -120,8 +123,9 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		List<String> bodyTermVector = Utility.tokenize2(body);
 		buildMapFromTokens(bodyTermVector,docId);
 
+
 		DocumentIndexed doc = new DocumentIndexed(docId);
-		
+
 		Map<Integer,Integer> termFrequencyMap = new HashMap<Integer,Integer>();
 		//build _dictionary
 		for(String token:uniqueTermSetBody){
@@ -138,36 +142,47 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 		doc.termId = new int[uniqueTermSetBody.size()];
 		doc.termFrequency = new int[uniqueTermSetBody.size()];
-		for(String token : bodyTermVector){
+		for(int tokenIndex = 0 ; tokenIndex < bodyTermVector.size() ; tokenIndex++){
+			String token = bodyTermVector.get(tokenIndex);
 			int id = _dictionary.get(token);
 			_corpusTermFrequency.set(id, _corpusTermFrequency.get(id) + 1);
-			
+
+			// Create the wordMapTree for all the words
+			if(!(_wordTreeDictionary.containsKey(token)))
+			{
+				WordTree wordTree = new WordTree();
+				_wordTreeDictionary.put(token, wordTree);
+			}
+			WordTree wordTree = _wordTreeDictionary.get(token);
+			String termArray[] = new String[5];
+			wordTree.add((bodyTermVector.subList(tokenIndex, tokenIndex + 5)).toArray(termArray));
+			_wordTreeDictionary.put(token, wordTree);
 			if(termFrequencyMap.containsKey(id)){
 				termFrequencyMap.put(id, termFrequencyMap.get(id) + 1);
 			}
 			else{
 				termFrequencyMap.put(id, 1);
 			}
-			
+
 		}
-		
+
 		// Convert the hashMap to arrayList for Sorting
 		List<Map.Entry<Integer, Integer>> entries = new ArrayList<Map.Entry<Integer, Integer>>(termFrequencyMap.entrySet());
 		Collections.sort(entries, new Comparator<Map.Entry<Integer, Integer>>() {
-			  public int compare(
-			      Map.Entry<Integer, Integer> entry1, Map.Entry<Integer, Integer> entry2) {
-				  if(entry1.getValue() > entry2.getValue()){
-					  return -1;
-				  }
-				  else if(entry1.getValue() < entry2.getValue()){
-					  return 1;
-				  }
-				  else{
-					  return 0;
-				  }
-			  }
-			});
-		
+			public int compare(
+					Map.Entry<Integer, Integer> entry1, Map.Entry<Integer, Integer> entry2) {
+				if(entry1.getValue() > entry2.getValue()){
+					return -1;
+				}
+				else if(entry1.getValue() < entry2.getValue()){
+					return 1;
+				}
+				else{
+					return 0;
+				}
+			}
+		});
+
 		int indexNum = 0;
 		for(Entry<Integer,Integer> entry : entries){
 			doc.termId[indexNum] = entry.getKey().intValue();
@@ -216,18 +231,18 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		    System.out.println(doc.getTitle());
 		 */
 	}
-	
+
 	private void deleteFile(){
 		String path = _options._indexPrefix + "/";
 		File dir = new File(path);
 		File[] fileLs = dir.listFiles();
 		for(File file : fileLs){
 			if(file.getName().endsWith(".idx")){
-			file.delete();
+				file.delete();
 			}
 		}
 	}
-	
+
 	// return a pos such that posLs.get(pos)> docid
 	public int postLsNext(ArrayList<Integer> postLs, int cache, int docid){
 		int last = postLs.size() - 1;
@@ -251,7 +266,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 			return -1;
 		}
 	}
-	
+
 	// number of documents the term occurs in
 	@Override
 	public int corpusDocFrequencyByTerm(String term) {
@@ -265,7 +280,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		return _dictionary.containsKey(term) ?
 				_corpusTermFrequency.get(_dictionary.get(term)) : 0;
 	}
-	
+
 	@Override
 	public DocumentIndexed getDoc(int docid) {
 		if(docid < _documents.size()){
