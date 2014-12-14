@@ -294,6 +294,7 @@ public class WordTree {
 			i++;
 			int len = Integer.parseInt(ls[i]);
 			i++;
+			System.out.println(freq + " " + len);
 			int[] idLs = new int[len];
 			for(int j = 0; j < len; j++){
 				idLs[j] = Integer.parseInt(ls[i]);
@@ -304,7 +305,7 @@ public class WordTree {
 		return wt;
 	}
 	
-	public String toString(int threshold){
+	public String convertTreeToString(int threshold){
 		StringBuffer out = new StringBuffer();
 		int[] idLs = new int[maxDepth];
 		nodeToString(root, out, idLs, 0, "", " ", threshold);
@@ -391,8 +392,8 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-		System.out.println(wt.toString(2));
-		WordTree wt2 = genTree(wt.toString(2));
-		System.out.println(wt2.toString(0));
+		System.out.println(wt.convertTreeToString(2));
+		WordTree wt2 = genTree(wt.convertTreeToString(2));
+		System.out.println(wt2.convertTreeToString(0));
 	}
 }
