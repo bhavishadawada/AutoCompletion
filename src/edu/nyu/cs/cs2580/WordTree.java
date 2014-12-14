@@ -285,10 +285,29 @@ public class WordTree {
 
 	}
 	
-	public String convertTreeToString(int threshold){
+	public static WordTree genTree(String str){
+		String[] ls = str.split(" ");
+		int i = 0;
+		WordTree wt = new WordTree();
+		while(i < ls.length){
+			int freq = Integer.parseInt(ls[i]);
+			i++;
+			int len = Integer.parseInt(ls[i]);
+			i++;
+			int[] idLs = new int[len];
+			for(int j = 0; j < len; j++){
+				idLs[j] = Integer.parseInt(ls[i]);
+				i++;
+			}
+			wt.add(idLs);
+		}
+		return wt;
+	}
+	
+	public String toString(int threshold){
 		StringBuffer out = new StringBuffer();
 		int[] idLs = new int[maxDepth];
-		nodeToString(root, out, idLs, 0, "", ",", threshold);
+		nodeToString(root, out, idLs, 0, "", " ", threshold);
 		return out.toString();
 	}
 	
@@ -372,8 +391,8 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-
-		System.out.println(wt.toString());
-
+		System.out.println(wt.toString(2));
+		WordTree wt2 = genTree(wt.toString(2));
+		System.out.println(wt2.toString(0));
 	}
 }
