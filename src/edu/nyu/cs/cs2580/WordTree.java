@@ -13,6 +13,13 @@ public class WordTree {
 	private HashMap<String, Integer> dictionary;
 	private ArrayList<String> termLs;
 
+	public WordTree(HashMap<String, Integer> dictionary, ArrayList<String> termLs){
+		root = new Node(-1);
+		size = 0;
+		this.dictionary = dictionary;
+		this.termLs = termLs;
+	}
+
 	public WordTree(){
 		root = new Node(-1);
 		size = 0;
