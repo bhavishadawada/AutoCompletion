@@ -96,6 +96,9 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 			if(_numDocs % BULK_DOC_PROCESSING_SIZE == 0){
 				writeFileHelper(false);
 				clearCharMap();
+				write_wordTreeDictionary_ToFile(0);
+				this._wordTreeDictionary.clear();
+
 				//writeFrequency(_corpusTermFrequency);
 				//_corpusTermFrequency.clear();
 			}
@@ -106,7 +109,13 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 			writeFileHelper(false);
 			clearCharMap();
 		}
-		mergeAll();
+
+		// if the _wordTreeDictionary is not empty 
+		if(!(_wordTreeDictionary.isEmpty())){
+			write_wordTreeDictionary_ToFile(0);
+			this._wordTreeDictionary.clear();
+		}
+		mergeAll(); 
 
 		System.out.println("_dictionary size: " + _dictionary.size());
 		String indexFile = _options._indexPrefix + "/corpus.idx";
@@ -116,10 +125,16 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(indexFile));
 		this._termLs2 = this._termLs;
 		writer.writeObject(this);
-		
-		// call the write _wordTreeDictionary here
-		write_wordTreeDictionary_ToFile();
-		
+
+		System.out.println("Works before mergeing");
+		//clearing memory
+
+
+
+		// merge the wordTree and write to file
+		merge_wordTreeDictionary();
+		write_wordTreeDictionary_ToFile(10);
+
 		writer.close();
 		long endTime = System.nanoTime();
 		System.out.println("Took ConstructIndex"+(endTime - startTime)/1000000000.0 + " s");
@@ -229,9 +244,9 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		for (Integer freq : loaded._corpusTermFrequency) {
 			this._totalTermFrequency += freq;
 		}
-		
+
 		// Read the _wordTreeDictionary here
-		
+
 		System.out.println(Integer.toString(_numDocs) + " documents loaded " +
 				"with " + Long.toString(_totalTermFrequency) + " terms!");
 		reader.close();
@@ -247,30 +262,58 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 				file.delete();
 			}
 		}
+		
+		String filePath = _options._indexPrefix + "/wordTree" + ".txt";
+		File file = new File(filePath);
+		if(file.exists()){
+			file.delete();
+		}
 	}
-	
+
 	// Write _wordTreeDictionary to the file
 	// String : int[]
-	private void write_wordTreeDictionary_ToFile() throws IOException{
+	private void write_wordTreeDictionary_ToFile(int threshold) throws IOException{
 		String path = _options._indexPrefix + "/wordTree" + ".txt";
 		File file = new File(path);
 		BufferedWriter write = new BufferedWriter(new FileWriter(file, true));
 		for(String token : _wordTreeDictionary.keySet()){
-			String str = (_wordTreeDictionary.get(token)).convertTreeToString(10);
-			if(str.length() > 0){
+			String str = (_wordTreeDictionary.get(token)).convertTreeToString(threshold);
+			if(token.equals("the") && threshold == 10){
+				System.out.println("the");
+			}
+			if(str.trim().length() >0 ){
 				write.write(token + ":");
 				write.write(str);
 				write.write("\n");
 			}
-			
+
 		}
 		write.close();
 	}
-	
+
+	// To merge the _wordTreeDictionary
+	private void merge_wordTreeDictionary() throws FileNotFoundException{
+		System.out.println("Merge Tree Dictionary");
+		String file = _options._indexPrefix + "/wordTree" + ".txt";
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line = null;
+		try {
+			while ((line = reader.readLine()) != null) {
+				String lineArray[] = line.split(":");
+				if(!(_wordTreeDictionary.containsKey(lineArray[0]))){
+					_wordTreeDictionary.put(lineArray[0], new WordTree());
+				}
+				WordTree.mergeTree(_wordTreeDictionary.get(lineArray[0]) , lineArray[1]);		
+			}
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	//Read the _wordTreeDictionary into memory from the file
 	private void read_wordTreeDictionary() throws FileNotFoundException{
 		String file = _options._indexPrefix + "/wordTree" + ".txt";
-		BufferedReader reader = new BufferedReader(new FileReader(file));
 		
 	}
 

@@ -162,7 +162,7 @@ public class WordTree {
 			node = node.firstChild;
 			node.freq += freq;
 		}
-		
+
 		return true;
 	}
 
@@ -298,40 +298,43 @@ public class WordTree {
 		}
 
 	}
-	
+
 	public static WordTree genTree(String str){
 		WordTree wt = new WordTree();
 		mergeTree(wt, str);
 		return wt;
 	}
-	
+
+	// To merge to tree while reading from the file
 	public static void mergeTree(WordTree wt, String str){
 		String[] ls = str.split(" ");
 		int i = 0;
 		while(i < ls.length){
 			if(ls[i].length() == 0)
 				break; // ignore empty string
-			int freq = Integer.parseInt(ls[i]);
+			int freq = Integer.parseInt(ls[i].trim());
 			i++;
-			int len = Integer.parseInt(ls[i]);
+			int len = Integer.parseInt(ls[i].trim());
 			i++;
 			int[] idLs = new int[len + 1];
 			idLs[len] = -1; // add extra node indicate this is the end of the word list
 			for(int j = 0; j < len; j++){
-				idLs[j] = Integer.parseInt(ls[i]);
+				idLs[j] = Integer.parseInt(ls[i].trim());
 				i++;
 			}
 			wt.add(idLs, freq);
 		}
 	}
-	
+
+	// Convert Tree to string for serializing 
 	public String convertTreeToString(int threshold){
 		StringBuffer out = new StringBuffer();
 		int[] idLs = new int[maxDepth];
 		nodeToString(root, out, idLs, 0, "", " ", threshold);
 		return out.toString();
 	}
-	
+
+
 	private static void nodeToString(Node root, StringBuffer out, int[] idLs, int pointer, String pre, String post, int threshold){
 		Node n = root.firstChild;
 		while (n != null)
@@ -362,7 +365,7 @@ public class WordTree {
 			n = n.nextSibling;
 		}
 	}
-	
+
 	public void writeFile(String file, String delimiter, String quoteMark) throws IOException
 	{
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
@@ -385,8 +388,9 @@ public class WordTree {
 					if(i > 0)
 						out.write(" ");
 					out.write(Integer.toString(idLs[i]));
+
+					out.write(post);
 				}
-				out.write(post);
 			}
 			else
 			{
@@ -396,7 +400,7 @@ public class WordTree {
 			n = n.nextSibling;
 		}
 	}
-	
+
 
 	static public void main(String[] args) throws IOException{
 		WordTree wt = new WordTree();
