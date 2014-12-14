@@ -1,8 +1,13 @@
 package edu.nyu.cs.cs2580;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -51,7 +56,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	int[] numViewLs;
 
 	// DS to store word tree for everyword
-	private Map<String , WordTree> _wordTreeDictionary = new HashMap<String, WordTree>();
+	private transient Map<String , WordTree> _wordTreeDictionary = new HashMap<String, WordTree>();
 
 	public Indexer2() { }
 	public Indexer2(Options options) {
@@ -111,6 +116,10 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(indexFile));
 		this._termLs2 = this._termLs;
 		writer.writeObject(this);
+		
+		// call the write _wordTreeDictionary here
+		write_wordTreeDictionary_ToFile();
+		
 		writer.close();
 		long endTime = System.nanoTime();
 		System.out.println("Took ConstructIndex"+(endTime - startTime)/1000000000.0 + " s");
@@ -142,7 +151,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 		doc.termId = new int[uniqueTermSetBody.size()];
 		doc.termFrequency = new int[uniqueTermSetBody.size()];
-		for(int tokenIndex = 0 ; tokenIndex < bodyTermVector.size() ; tokenIndex++){
+		for(int tokenIndex = 0 ; tokenIndex < bodyTermVector.size() - 6 ; tokenIndex++){
 			String token = bodyTermVector.get(tokenIndex);
 			int id = _dictionary.get(token);
 			_corpusTermFrequency.set(id, _corpusTermFrequency.get(id) + 1);
@@ -220,17 +229,13 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		for (Integer freq : loaded._corpusTermFrequency) {
 			this._totalTermFrequency += freq;
 		}
+		
+		// Read the _wordTreeDictionary here
+		
 		System.out.println(Integer.toString(_numDocs) + " documents loaded " +
 				"with " + Long.toString(_totalTermFrequency) + " terms!");
 		reader.close();
 
-		/*
-		    Query query = new Query("Alfred Matthew");
-		    Document doc = nextDoc(query, -1);
-		    System.out.println(doc.getTitle());
-		    doc = nextDoc(query, doc._docid);
-		    System.out.println(doc.getTitle());
-		 */
 	}
 
 	private void deleteFile(){
@@ -242,6 +247,27 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 				file.delete();
 			}
 		}
+	}
+	
+	// Write _wordTreeDictionary to the file
+	// String : int[]
+	private void write_wordTreeDictionary_ToFile() throws IOException{
+		String path = _options._indexPrefix + "/wordTree" + ".txt";
+		File file = new File(path);
+		BufferedWriter write = new BufferedWriter(new FileWriter(file, true));
+		for(String token : _wordTreeDictionary.keySet()){
+			write.write(token + ":");
+			write.write((_wordTreeDictionary.get(token)).convertTreeToString(10) + "\n");
+			
+		}
+		write.close();
+	}
+	
+	//Read the _wordTreeDictionary into memory from the file
+	private void read_wordTreeDictionary() throws FileNotFoundException{
+		String file = _options._indexPrefix + "/wordTree" + ".txt";
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		
 	}
 
 	// return a pos such that posLs.get(pos)> docid

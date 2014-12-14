@@ -284,7 +284,7 @@ public class WordTree {
 
 	}
 	
-	public String toString(int threshold){
+	public String convertTreeToString(int threshold){
 		StringBuffer out = new StringBuffer();
 		int[] idLs = new int[maxDepth];
 		nodeToString(root, out, idLs, 0, "", "\n");
@@ -364,6 +364,6 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
-		System.out.println(wt.toString(10));
+		System.out.println(wt.convertTreeToString(10));
 	}
 }
