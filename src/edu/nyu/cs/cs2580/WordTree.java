@@ -284,16 +284,15 @@ public class WordTree {
 
 	}
 	
-	/*
 	public void writeFile(String file, String delimiter, String quoteMark) throws IOException
 	{
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
-		char[] c = new char[maxDepth];
-		writeNode(root, out, c, 0, quoteMark, quoteMark + delimiter);
+		int[] idLs = new int[maxDepth];
+		writeNode(root, out, idLs, 0, quoteMark, quoteMark + delimiter);
 		out.close();
 	}
 
-	private static void writeNode(Node root, java.io.BufferedWriter out, char[] chars, int pointer, String pre, String post) throws java.io.IOException
+	private static void writeNode(Node root, java.io.BufferedWriter out, int[] idLs, int pointer, String pre, String post) throws java.io.IOException
 	{
 		Node n = root.firstChild;
 		while (n != null)
@@ -301,21 +300,26 @@ public class WordTree {
 			if (n.firstChild == null)
 			{
 				out.write(pre);
-				out.write(new String(chars, 0, pointer));
+				out.write(Integer.toString(n.freq));
+				out.write("\t");
+				for(int i = 0; i < pointer; i++){
+					if(i > 0)
+						out.write(" ");
+					out.write(Integer.toString(idLs[i]));
+				}
 				out.write(post);
 			}
 			else
 			{
-				chars[pointer] = (char)n.value;
-				writeNode(n, out, chars, pointer + 1, pre, post);
+				idLs[pointer] = n.id;
+				writeNode(n, out, idLs, pointer + 1, pre, post);
 			}
 			n = n.nextSibling;
 		}
 	}
-	*/
 	
 
-	static public void main(String[] args){
+	static public void main(String[] args) throws IOException{
 		WordTree wt = new WordTree();
 		wt.add("new york");
 		wt.add("new york");
@@ -328,5 +332,6 @@ public class WordTree {
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
+		wt.writeFile("test.txt", "\n", "");
 	}
 }
