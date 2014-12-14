@@ -256,8 +256,12 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		File file = new File(path);
 		BufferedWriter write = new BufferedWriter(new FileWriter(file, true));
 		for(String token : _wordTreeDictionary.keySet()){
-			write.write(token + ":");
-			write.write((_wordTreeDictionary.get(token)).convertTreeToString(10) + "\n");
+			String str = (_wordTreeDictionary.get(token)).convertTreeToString(10);
+			if(str.length() > 0){
+				write.write(token + ":");
+				write.write(str);
+				write.write("\n");
+			}
 			
 		}
 		write.close();
