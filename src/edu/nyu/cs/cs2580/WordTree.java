@@ -34,8 +34,6 @@ public class WordTree {
 	public WordTree(){
 		root = new Node(-1);
 		size = 0;
-		termLs = new ArrayList<String>();
-		dictionary = new HashMap<String, Integer>();
 	}
 
 	public int[] wordLsToIdLs(String[] wordLs, boolean add){

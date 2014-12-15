@@ -64,7 +64,6 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	public Indexer2() { }
 	public Indexer2(Options options) {
 		super(options);
-		WordTree.init((HashMap<String, Integer>) this._dictionary, this._termLs);
 	}
 
 	protected abstract void buildMapFromTokens(List<String> uniqueTermSet, int docId);
@@ -97,7 +96,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 					System.out.println("suggest len " + wordArr.length);
 					arr = new String[wordArr.length];
 					for(int i = 0; i < wordArr.length; i++){
-						arr[i] = wordArr[i][0];
+						arr[i] = wordArr[i][1];
 					}
 				}
 			}
@@ -115,6 +114,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 	@Override
 	public void constructIndex() throws IOException {
+		WordTree.init((HashMap<String, Integer>) this._dictionary, this._termLs);
 		String corpusFile = _options._corpusPrefix;
 		System.out.println("Construct index from: " + corpusFile);
 		long startTime = System.nanoTime();
@@ -294,6 +294,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		System.out.println(Integer.toString(_numDocs) + " documents loaded " +
 				"with " + Long.toString(_totalTermFrequency) + " terms!");
 		reader.close();
+		WordTree.init((HashMap<String, Integer>) this._dictionary, this._termLs);
 
 	}
 

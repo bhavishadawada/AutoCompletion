@@ -134,6 +134,7 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	    int termId = _dictionary.get(term);
 	    System.out.println(_postListCompressed.get(termId).deCompress());
 	    */
+		WordTree.init((HashMap<String, Integer>) this._dictionary, this._termLs);
   }
 
   @Override

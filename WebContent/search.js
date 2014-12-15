@@ -14,6 +14,9 @@ myApp.directive('ngEnter', function () {
 
               event.preventDefault();
           }
+          else if(event.which == 32){
+          	
+          }
       });
   };
 });
