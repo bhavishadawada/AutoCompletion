@@ -338,7 +338,35 @@ public class WordTree {
 		nodeToString(root, out, idLs, 0, "", " ", threshold);
 		return out.toString();
 	}
-
+	
+	public void trim(int threshold){
+		
+	}
+	private static void trim(Node root, int threshold){
+		if(root.firstChild == null){
+			return;
+		}
+		else{
+			Node last = null;
+			Node node = root.firstChild;
+			while(node != null){
+				if(node.freq < threshold){
+					System.out.println("trim " + node.id);
+					if(last == null){
+						root.firstChild = node.nextSibling;
+					}
+					else{
+						last.nextSibling = node.nextSibling;
+					}
+				}
+				else{
+					trim(node, threshold);
+					last = node;
+				}
+				node = node.nextSibling;
+			}
+		}
+	}
 
 	private static void nodeToString(Node root, StringBuffer out, int[] idLs, int pointer, String pre, String post, int threshold){
 		Node n = root.firstChild;
@@ -408,21 +436,24 @@ public class WordTree {
 
 
 	static public void main(String[] args) throws IOException{
+		WordTree.init(new HashMap<String, Integer>(), new ArrayList<String>());
 		WordTree wt = new WordTree();
-		wt.add("new york");
-		wt.add("new york");
+		wt.add("new york indian");
+		wt.add("new york taiwan");
 		wt.add("new york city");
-		wt.add("new york city");
-		wt.add("new york city");
-		wt.add("new york city");
-		wt.add("new year");
-		wt.add("new shoes");
+		wt.add("new york times");
+		wt.add("new york happy");
 		List<String> wordArr = wt.suggest("new");
 		for(String wordLs : wordArr){
 			System.out.println(wordLs);
 		}
 		String str = wt.convertTreeToString(0);
 		System.out.println(str);
+		WordTree.trim(wt.root, 3);
+
+		str = wt.convertTreeToString(0);
+		System.out.println(str);
+
 		WordTree wt2 = genTree(str);
 		System.out.println(wt2.convertTreeToString(0));
 	}
