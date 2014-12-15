@@ -14,8 +14,8 @@ public class WordTree {
 	private Node root;
 	private int size;
 	private int maxDepth; // Not exact, but bounding for the maximum
-	private HashMap<String, Integer> dictionary;
-	private ArrayList<String> termLs;
+	HashMap<String, Integer> dictionary;
+	ArrayList<String> termLs;
 
 	public WordTree(HashMap<String, Integer> dictionary, ArrayList<String> termLs){
 		root = new Node(-1);

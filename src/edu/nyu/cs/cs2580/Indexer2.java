@@ -83,9 +83,34 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	}
 	
 	public String[] suggest(String prefix, int num){
-	  String[] arr = this._trieTree.suggest(prefix);
-	  Arrays.sort(arr, new TermFreqComparator());
-	  return Arrays.copyOfRange(arr, 0, Math.min(arr.length, num));
+		String[] arr =  new String[0];
+		if(prefix.endsWith(" ")){
+			System.out.println("word tree");
+			// check word tree
+			String wordLs[] = prefix.trim().split(" ");
+			if(wordLs.length > 0){
+				String word = wordLs[0];
+				if(_wordTreeDictionary.containsKey(word)){
+					WordTree wt = _wordTreeDictionary.get(word);
+					wt.dictionary = (HashMap<String, Integer>) this._dictionary;
+					wt.termLs = this._termLs;
+					String[][] wordArr = wt.suggest(wordLs);
+					System.out.println("suggest len " + wordArr.length);
+					arr = new String[wordArr.length];
+					for(int i = 0; i < wordArr.length; i++){
+						arr[i] = wordArr[i][0];
+					}
+				}
+			}
+		}
+		else{
+			// auto completion
+			System.out.println("auto completion");
+	        arr = this._trieTree.suggest(prefix);
+	        Arrays.sort(arr, new TermFreqComparator());
+	        return Arrays.copyOfRange(arr, 0, Math.min(arr.length, num));
+		}
+		return arr;
 	}
 
 
