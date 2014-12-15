@@ -64,6 +64,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	public Indexer2() { }
 	public Indexer2(Options options) {
 		super(options);
+		WordTree.init((HashMap<String, Integer>) this._dictionary, this._termLs);
 	}
 
 	protected abstract void buildMapFromTokens(List<String> uniqueTermSet, int docId);
@@ -92,8 +93,6 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 				String word = wordLs[0];
 				if(_wordTreeDictionary.containsKey(word)){
 					WordTree wt = _wordTreeDictionary.get(word);
-					wt.dictionary = (HashMap<String, Integer>) this._dictionary;
-					wt.termLs = this._termLs;
 					String[][] wordArr = wt.suggest(wordLs);
 					System.out.println("suggest len " + wordArr.length);
 					arr = new String[wordArr.length];

@@ -14,14 +14,21 @@ public class WordTree {
 	private Node root;
 	private int size;
 	private int maxDepth; // Not exact, but bounding for the maximum
-	HashMap<String, Integer> dictionary;
-	ArrayList<String> termLs;
+	static HashMap<String, Integer> dictionary;
+	static ArrayList<String> termLs;
 
+	/*
 	public WordTree(HashMap<String, Integer> dictionary, ArrayList<String> termLs){
 		root = new Node(-1);
 		size = 0;
 		this.dictionary = dictionary;
 		this.termLs = termLs;
+	}
+	*/
+	
+	public static void init(HashMap<String, Integer> dictionary, ArrayList<String> termLs){
+		WordTree.dictionary = dictionary;
+		WordTree.termLs = termLs;
 	}
 
 	public WordTree(){
