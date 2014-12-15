@@ -133,6 +133,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 		// merge the wordTree and write to file
 		merge_wordTreeDictionary();
+		new File(_options._indexPrefix + "/wordTree" + ".txt").delete();
 		write_wordTreeDictionary_ToFile(10);
 
 		writer.close();
@@ -278,15 +279,11 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		BufferedWriter write = new BufferedWriter(new FileWriter(file, true));
 		for(String token : _wordTreeDictionary.keySet()){
 			String str = (_wordTreeDictionary.get(token)).convertTreeToString(threshold);
-			if(token.equals("the") && threshold == 10){
-				System.out.println("the");
-			}
 			if(str.trim().length() >0 ){
 				write.write(token + ":");
 				write.write(str);
 				write.write("\n");
 			}
-
 		}
 		write.close();
 	}
