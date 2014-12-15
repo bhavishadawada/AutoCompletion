@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,6 +58,8 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 
 	// DS to store word tree for everyword
 	private transient Map<String , WordTree> _wordTreeDictionary = new HashMap<String, WordTree>();
+	
+	protected transient TrieTree _trieTree;
 
 	public Indexer2() { }
 	public Indexer2(Options options) {
@@ -72,6 +75,19 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	protected abstract boolean isEmptyCharMap();
 
 	protected abstract void mergeAll()throws IOException;
+
+	class TermFreqComparator implements Comparator<String>{
+		public int compare(String s0, String s1) {
+			return _corpusTermFrequency.get(_dictionary.get(s1)) - _corpusTermFrequency.get(_dictionary.get(s0));
+		}
+	}
+	
+	public String[] suggest(String prefix, int num){
+	  String[] arr = this._trieTree.suggest(prefix);
+	  Arrays.sort(arr, new TermFreqComparator());
+	  return Arrays.copyOfRange(arr, 0, Math.min(arr.length, num));
+	}
+
 
 	@Override
 	public void constructIndex() throws IOException {
@@ -244,6 +260,9 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		for (Integer freq : loaded._corpusTermFrequency) {
 			this._totalTermFrequency += freq;
 		}
+		
+	    this._trieTree = new TrieTree(false);
+	    this._trieTree.addAll(this._termLs.toArray(new String[this._termLs.size()]));
 
 		// Read the _wordTreeDictionary here
 

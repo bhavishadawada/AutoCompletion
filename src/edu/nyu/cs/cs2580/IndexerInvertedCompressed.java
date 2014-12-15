@@ -49,8 +49,7 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	*/
 	private IndexerInvertedOccurrence _occurIndex;
 	private ArrayList<PostListCompressed> _postListCompressed; 
-	
-	private TrieTree _trieTree;
+
 	
 	// use buffer of post list to reduce file IO
 	private HashMap<String, PostListOccurence> _postListBuf = 
@@ -120,18 +119,7 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	    writer.close();
   }
   
-  class TermFreqComparator implements Comparator<String>{
-		public int compare(String s0, String s1) {
-			return _corpusTermFrequency.get(_dictionary.get(s1)) - _corpusTermFrequency.get(_dictionary.get(s0));
-		}
-  }
-  public String[] suggest(String prefix, int num){
-	  String[] arr = this._trieTree.suggest(prefix);
-	  Arrays.sort(arr, new TermFreqComparator());
-	  return Arrays.copyOfRange(arr, 0, Math.min(arr.length, num));
-  }
-  
-	
+
   @Override
   public void loadIndex() throws IOException, ClassNotFoundException {
 	    String indexFile = _options._indexPrefix + "/corpus.idx";
