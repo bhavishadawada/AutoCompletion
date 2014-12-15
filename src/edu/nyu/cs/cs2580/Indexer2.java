@@ -266,7 +266,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	    this._trieTree.addAll(this._termLs.toArray(new String[this._termLs.size()]));
 
 		// Read the _wordTreeDictionary here
-
+	    read_wordTreeDictionary();
 		System.out.println(Integer.toString(_numDocs) + " documents loaded " +
 				"with " + Long.toString(_totalTermFrequency) + " terms!");
 		reader.close();
@@ -328,8 +328,16 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		}
 	}
 	//Read the _wordTreeDictionary into memory from the file
-	private void read_wordTreeDictionary() throws FileNotFoundException{
+	protected void read_wordTreeDictionary() throws IOException{
 		String file = _options._indexPrefix + "/wordTree" + ".txt";
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			String lineArray[] = line.split(":");
+			WordTree wordtree = new WordTree();
+			WordTree.mergeTree(wordtree, lineArray[1]);
+			_wordTreeDictionary.put(lineArray[0], wordtree);
+		}
 		
 	}
 

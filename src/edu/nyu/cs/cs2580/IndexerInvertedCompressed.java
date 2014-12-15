@@ -24,29 +24,7 @@ import edu.nyu.cs.cs2580.SearchEngine.Options;
  * @CS2580: Implement this class for HW2.
  */
 public class IndexerInvertedCompressed extends Indexer2 {
-	/*
-	private static final long serialVersionUID = -1785477383728439657L;
 
-	// Data structure to maintain unique terms with id
-	private Map<String, Integer> _dictionary = new HashMap<String, Integer>();
-
-	// Data structure to store number of times a term occurs in Document
-	// term id --> frequency
-	private ArrayList<Integer> _documentTermFrequency = new ArrayList<Integer>();
-
-	// Data structure to store number of times a term occurs in the complete Corpus
-	// term id --> frequency
-	private ArrayList<Integer> _corpusTermFrequency = new ArrayList<Integer>();
-	
-	private ArrayList<Integer> _termLineNum = new ArrayList<Integer>();
-	
-
-	// Data structure to store unique terms in the document
-	//private Vector<String> _terms = new Vector<String>();
-
-	// Stores all Document in memory.
-	private List<DocumentIndexed> _documents = new ArrayList<DocumentIndexed>();
-	*/
 	private IndexerInvertedOccurrence _occurIndex;
 	private ArrayList<PostListCompressed> _postListCompressed; 
 
@@ -144,7 +122,7 @@ public class IndexerInvertedCompressed extends Indexer2 {
 	    }
 	    
 	    this._postListCompressed = loaded._postListCompressed;
-	    
+	    read_wordTreeDictionary();
 	    System.out.println(Integer.toString(_numDocs) + " documents loaded " +
 	        "with " + Long.toString(_totalTermFrequency) + " terms!");
 	    reader.close();
