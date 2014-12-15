@@ -11,11 +11,20 @@ myApp.directive('ngEnter', function () {
               scope.$apply(function (){
                   scope.$eval(attrs.ngEnter);
               });
-
               event.preventDefault();
           }
-          else if(event.which == 32){
-          	
+      });
+  };
+});
+
+myApp.directive('ngSpace', function () {
+  return function (scope, element, attrs) {
+      element.bind("keydown keypress", function (event) {
+          if(event.which === 32) {
+              scope.$apply(function (){
+                  scope.$eval(attrs.ngSpace);
+              });
+              event.preventDefault();
           }
       });
   };
@@ -51,12 +60,12 @@ myApp.controller('searchCtrl', function($scope, $http) {
     	//$scope.query = $scope.query.replace(/\s/g,"%20");
     	$scope.query = $scope.query.replace("-","%20");
       console.log("type " + $scope.query);
-      suggestXmlhttp=new XMLHttpRequest();
-      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+$scope.query+"&userId="+userId+"&ranker=favorite&format=json&num=10",true);
-      console.log("http://localhost:25811/suggest?query="+$scope.query+"&userId="+userId+"&ranker=favorite&format=json&num=10");
-      suggestXmlhttp.onreadystatechange = suggestHandler;
-      suggestXmlhttp.send();
+      suggest($scope.query);
     };
+    $scope.predict = function(){
+    	console.log("type space" + $scope.query);
+    	suggest($scope.query+" ");
+    }
     $scope.search = function(){
     	//$scope.query = $scope.query.replace(/\s/g,"%20");
       console.log("search " + $scope.query);
@@ -65,6 +74,15 @@ myApp.controller('searchCtrl', function($scope, $http) {
       searchXmlhttp.onreadystatechange = searchHandler;
       searchXmlhttp.send();
     };
+    
+    function suggest(prefix){
+    	prefix = prefix.replace(/\s/g,"%20");
+      suggestXmlhttp=new XMLHttpRequest();
+      suggestXmlhttp.open("GET","http://localhost:25811/suggest?query="+prefix+"&userId="+userId+"&ranker=favorite&format=json&num=10",true);
+      console.log("http://localhost:25811/suggest?query="+prefix+"&userId="+userId+"&ranker=favorite&format=json&num=10");
+      suggestXmlhttp.onreadystatechange = suggestHandler;
+      suggestXmlhttp.send();
+    }
     
     function searchHandler(){
       if (searchXmlhttp.readyState==4 && searchXmlhttp.status==200)
