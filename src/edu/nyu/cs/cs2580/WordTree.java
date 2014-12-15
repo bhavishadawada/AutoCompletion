@@ -70,9 +70,11 @@ public class WordTree {
 	}
 
 	public boolean add(String query){
+		/*
 		// add an extra node with "\t" at the end
 		// such that the tree can suggest both "new york" and "new york city" 
 		query = query + " \t";
+		*/
 		return add(query.split(" "));
 	}
 
@@ -176,15 +178,9 @@ public class WordTree {
 		Node n = root.firstChild;
 		while (n != null)
 		{
-			if (n.firstChild == null)
-			{
-				itemLs.add(new Item(n.freq, Arrays.copyOfRange(idLs, 0, pointer)));
-			}
-			else
-			{
-				idLs[pointer] = n.id;
-				getAll(n, itemLs, idLs, pointer + 1);
-			}
+			idLs[pointer] = n.id;
+			itemLs.add(new Item(n.freq, Arrays.copyOfRange(idLs, 0, pointer + 1)));
+			getAll(n, itemLs, idLs, pointer + 1);
 			n = n.nextSibling;
 		}
 	}
@@ -321,8 +317,7 @@ public class WordTree {
 			i++;
 			int len = Integer.parseInt(ls[i].trim());
 			i++;
-			int[] idLs = new int[len + 1];
-			idLs[len] = -1; // add extra node indicate this is the end of the word list
+			int[] idLs = new int[len];
 			for(int j = 0; j < len; j++){
 				idLs[j] = Integer.parseInt(ls[i].trim());
 				i++;
@@ -335,7 +330,8 @@ public class WordTree {
 	public String convertTreeToString(int threshold){
 		StringBuffer out = new StringBuffer();
 		int[] idLs = new int[maxDepth];
-		nodeToString(root, out, idLs, 0, "", " ", threshold);
+		trim(root, threshold);
+		nodeToString(root, out, idLs, 0, "", " ", 0);
 		return out.toString();
 	}
 	
@@ -351,7 +347,7 @@ public class WordTree {
 			Node node = root.firstChild;
 			while(node != null){
 				if(node.freq < threshold){
-					System.out.println("trim " + node.id);
+					//System.out.println("trim " + node.id);
 					if(last == null){
 						root.firstChild = node.nextSibling;
 					}
@@ -372,6 +368,7 @@ public class WordTree {
 		Node n = root.firstChild;
 		while (n != null)
 		{
+			idLs[pointer] = n.id;
 			if(n.freq < threshold){
 				//trim
 			}
@@ -381,9 +378,9 @@ public class WordTree {
 				out.append(pre);
 				out.append(Integer.toString(n.freq));
 				out.append(" ");
-				out.append(Integer.toString(pointer));
+				out.append(Integer.toString(pointer+1));
 				out.append(" ");
-				for(int i = 0; i < pointer; i++){
+				for(int i = 0; i <= pointer; i++){
 					if(i > 0)
 						out.append(" ");
 					out.append(Integer.toString(idLs[i]));
@@ -392,7 +389,6 @@ public class WordTree {
 			}
 			else
 			{
-				idLs[pointer] = n.id;
 				nodeToString(n, out, idLs, pointer + 1, pre, post, threshold);
 			}
 			n = n.nextSibling;
@@ -441,6 +437,8 @@ public class WordTree {
 		wt.add("new york indian");
 		wt.add("new york taiwan");
 		wt.add("new york city");
+		wt.add("new york city");
+		wt.add("new york city");
 		wt.add("new york times");
 		wt.add("new york happy");
 		List<String> wordArr = wt.suggest("new");
@@ -449,7 +447,14 @@ public class WordTree {
 		}
 		String str = wt.convertTreeToString(0);
 		System.out.println(str);
-		WordTree.trim(wt.root, 3);
+		//WordTree.trim(wt.root, 3);
+		str = wt.convertTreeToString(3);
+		System.out.println(str);
+
+		wordArr = wt.suggest("new");
+		for(String wordLs : wordArr){
+			System.out.println(wordLs);
+		}
 
 		str = wt.convertTreeToString(0);
 		System.out.println(str);

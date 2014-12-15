@@ -96,7 +96,13 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 					System.out.println("suggest len " + wordArr.length);
 					arr = new String[wordArr.length];
 					for(int i = 0; i < wordArr.length; i++){
-						arr[i] = wordArr[i][1];
+						StringBuffer sb = new StringBuffer();
+						for(int j = 0; j < wordArr[i].length; j++){
+							if(j > 0)
+								sb.append(" ");
+							sb.append(wordArr[i][j]);
+						}
+						arr[i] = sb.toString();
 					}
 				}
 			}
