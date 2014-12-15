@@ -263,9 +263,8 @@ class QueryHandler implements HttpHandler {
 		}
 		// to return the id if the user is interacting for the first time
 		else if(uriPath.equals("/getId")){
-			Integer userId = QueryLogger.getLogger().size() + 1; 
-			QueryLogger.getLogger().put(userId, new WordTree());
-			System.out.println(QueryLogger.getLogger().size());
+			Integer userId = QueryLogger.getId();
+			System.out.println("The new userId is" + userId);
 			respondWithMsg(exchange, userId.toString());
 		}
 		else{
