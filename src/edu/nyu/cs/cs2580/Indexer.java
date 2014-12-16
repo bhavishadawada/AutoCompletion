@@ -3,6 +3,7 @@ package edu.nyu.cs.cs2580;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import edu.nyu.cs.cs2580.SearchEngine.Options;
 
@@ -139,7 +140,7 @@ public abstract class Indexer  {
   
   public abstract int documentTotalTermFrequency(int docid);
 
-  public abstract String[] suggest(String prefix, int num);
+  public abstract List<Suggest> suggest(String prefix, int num);
 
   /**
    * All Indexers must be created through this factory class based on the

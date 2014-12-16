@@ -235,6 +235,7 @@ class QueryHandler implements HttpHandler {
 			System.out.println("Finished query: " + cgiArgs._query);
 			
 			// Write to the user session 
+			System.out.println("_userId: " + cgiArgs._userId);
 			QueryLogger.addQuery(cgiArgs._userId, cgiArgs._query);
 			
 		}

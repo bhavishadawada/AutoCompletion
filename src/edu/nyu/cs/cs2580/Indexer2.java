@@ -82,8 +82,13 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		}
 	}
 	
-	public String[] suggest(String prefix, int num){
-		String[] arr =  new String[0];
+	public double normalize(double in, double threshold){
+	    double out = 1 - Math.pow(Math.E, -in/threshold);
+	    return out;
+	}
+	
+	public List<Suggest> suggest(String prefix, int num){
+		List<Suggest> sgLs =  new ArrayList<Suggest>();
 		if(prefix.endsWith(" ")){
 			System.out.println("word tree");
 			// check word tree
@@ -92,24 +97,32 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 				String word = wordLs[0];
 				if(_wordTreeDictionary.containsKey(word)){
 					WordTree wt = _wordTreeDictionary.get(word);
-					ArrayList<Suggest> sgLs = wt.suggest(wordLs);
+					sgLs = wt.suggest(wordLs);
 					System.out.println("suggest len " + sgLs.size());
-					arr = new String[sgLs.size()];
+					/*
 					for(int i = 0; i < sgLs.size(); i++){
-						arr[i] = sgLs.get(i).str;
 						System.out.println(sgLs.get(i));
 					}
+					*/
 				}
 			}
 		}
 		else{
 			// auto completion
 			System.out.println("auto completion");
-	        arr = this._trieTree.suggest(prefix);
-	        Arrays.sort(arr, new TermFreqComparator());
-	        return Arrays.copyOfRange(arr, 0, Math.min(arr.length, num));
+	        String[] arr = this._trieTree.suggest(prefix);
+	        for(String str : arr){
+	        	double freq = _corpusTermFrequency.get(_dictionary.get(str));
+	        	sgLs.add(new Suggest(normalize(freq, 10)/2,str));
+	        }
+	        Collections.sort(sgLs);
+	        /*
+			for(int i = 0; i < sgLs.size(); i++){
+				System.out.println(sgLs.get(i));
+			}
+			*/
 		}
-		return arr;
+		return sgLs.subList(0, Math.min(num, sgLs.size()));
 	}
 
 

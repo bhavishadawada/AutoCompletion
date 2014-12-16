@@ -84,7 +84,16 @@ public abstract class Ranker {
 	}
 	
 	public String[] suggest(String prefix, int num){
-		return _indexer.suggest(prefix, num);
+		List<Suggest> sgLs = _indexer.suggest(prefix, num);
+		sgLs.addAll(QueryLogger.getTopQueries(0, prefix));
+		Collections.sort(sgLs);
+		num = Math.min(num, sgLs.size());
+		String[] sgArr = new String[num];
+		for(int i = 0; i < num; i++){
+			sgArr[i] = sgLs.get(i).str;
+			System.out.println("ranker suggest: " + sgArr[i]);
+		}
+		return sgArr;
 	}
 
 	public List<Map.Entry<String, Double>> psuedoRelevanceCalc(QueryPhrase query, int numResults , int numTerms){

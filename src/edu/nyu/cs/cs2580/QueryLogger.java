@@ -12,10 +12,13 @@ public class QueryLogger {
 	private static Map<Integer, LinkedList<String>> _queryLog = 
 								new HashMap<Integer, LinkedList<String>>();
 	
-	private static int resultSetSize = 2 ; 
+	private static int resultSetSize = 10 ; 
 	
 	// To add the query to the beginning of LinkedList of a specific user
 	public static void addQuery(int userId , String query){
+		if(!_queryLog.containsKey(userId)){
+			QueryLogger.addIdToMap(userId);
+		}
 		LinkedList<String> userList = _queryLog.get(userId);
 		//double wordFrequency = -1 ; 
 		if(userList.contains(query)){
@@ -29,14 +32,16 @@ public class QueryLogger {
 	public static List<Suggest> getTopQueries(int userId, String partialQuery){
 		List<Suggest> recentQueryList = new ArrayList<>();
 		double i = 0;
-		for(String str : _queryLog.get(userId)){
-			i++;
-			if(str.toLowerCase().startsWith(partialQuery.toLowerCase())){
-				recentQueryList.add(new Suggest(1.0/i,str));
-			}
-			if(recentQueryList.size() == resultSetSize){
-				break;
-			}
+		if(_queryLog.containsKey(userId)){
+		    for(String str : _queryLog.get(userId)){
+		    	i++;
+		    	if(str.toLowerCase().startsWith(partialQuery.toLowerCase())){
+		    		recentQueryList.add(new Suggest(1.0/i,str));
+		    	}
+		    	if(recentQueryList.size() == resultSetSize){
+		    		break;
+		    	}
+		    }
 		}
 		return recentQueryList;
 	}

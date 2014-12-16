@@ -198,6 +198,10 @@ public class WordTree {
 	/*
 	 * Recursive function for finding all words starting with the given prefix
 	 */
+	public double normalize(double in, double threshold){
+	    double out = 1 - Math.pow(Math.E, -in/threshold);
+	    return out;
+	}
 
 	public ArrayList<Suggest> suggest(String[] wordLs){
 		int[] idLs = wordLsToIdLs(wordLs, false);
@@ -206,7 +210,7 @@ public class WordTree {
 		for(int i = 0; i < idArr.size(); i++){
 			String[] strLs = idLsToWordLs(idArr.get(i).idLs);
 			if(strLs.length > 0){
-				sgLs.add(new Suggest(idArr.get(i).freq, strLs));
+				sgLs.add(new Suggest(normalize(idArr.get(i).freq, 10)/2, strLs));
 			}
 		}
 		return sgLs;
