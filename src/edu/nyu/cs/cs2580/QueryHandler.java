@@ -124,12 +124,18 @@ class QueryHandler implements HttpHandler {
 		responseBody.close();
 	}
 
+	// Function to print the expanded query at the bottom of page
 	private void constructPrfOutput(
 			final List<Map.Entry<String, Double>> queryEapansion, StringBuffer response) {
+		JSONArray arr = new JSONArray();
 		for(Map.Entry<String, Double> entry : queryEapansion){
-			response.append(response.length() > 0 ? "\n" : "");
-			response.append(entry.getKey() + "\t" + entry.getValue());
+			JSONObject obj = new JSONObject();
+			obj.put("term", entry.getKey());
+			arr.add(obj);
+			/*response.append(response.length() > 0 ? "\n" : "");
+			response.append(entry.getKey() + "\t" + entry.getValue());*/
 		}
+		response.append(arr.toJSONString());	
 	}
 	
 	private void constructSuggestOutput(String[] termArr, StringBuffer response){
