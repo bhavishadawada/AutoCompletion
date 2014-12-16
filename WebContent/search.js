@@ -49,7 +49,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
       	userId = xmlhttp.responseText;
      		$scope.$apply();
      		localStorage.setItem("userId", userId);
-     		console.log("from server get userId: " + userId);
+     		console.log("from server get userId: " + userId)
         }
     	};
     	xmlhttp.send();
@@ -85,11 +85,41 @@ myApp.controller('searchCtrl', function($scope, $http) {
       suggestXmlhttp.send();
     }
     
+    function getContent(tag, content) 
+    { 
+       var x = content.indexOf("<"+tag);
+       x = content.indexOf(">", x);    
+       var y = content.lastIndexOf("</"+tag+">"); 
+       return content.slice(x + 1, y);
+    } 
+    
+    function fetch(url, id){
+    	var xmlhttp = new XMLHttpRequest();
+    	xmlhttp.open("GET", url);
+    	xmlhttp.onreadystatechange = function(){
+    		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+      	content = xmlhttp.responseText;
+      	var body = getContent("body", content);
+      	document.getElementById("fetch").innerHTML = body;
+      	var temp = document.getElementById("mw-content-text");
+      	document.getElementById(id).innerHTML = temp.getElementsByTagName("p")[0].innerHTML;
+
+     		$scope.$apply();
+        }
+    	};
+    	xmlhttp.send();
+    	
+    }
+    
     function searchHandler(){
       if (searchXmlhttp.readyState==4 && searchXmlhttp.status==200)
       {
       	$scope.webList = angular.fromJson(searchXmlhttp.responseText);
      		$scope.$apply();
+     		for(var i = 0; i < $scope.webList.length; i++){
+     			fetch("http://localhost/~angieyayabird/wiki/"+$scope.webList[i].title, "web"+$scope.webList[i].docid);
+     		}
       }
     }
 

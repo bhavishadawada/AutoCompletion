@@ -38,14 +38,12 @@
 <div class="container">
   
   	<hr>
+  			
           <div class="panel panel-default" ng-repeat="web in webList">
-            <div class="panel-heading"><h4><a href='{{"file://localhost/Users/angieyayabird/Sites/wiki/" + web.title}}'>{{web.title}}</a></h4></div>
-            <div class="panel-body" value="">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-            Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-            dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-            Aliquam in felis sit amet augue.
-            </div>
+            <div class="panel-heading"><h4><a href='{{"http://localhost/~angieyayabird/wiki/" + web.title}}'>{{web.title}}</a></h4></div>
+            <div class="panel-body" id="{{'web'+web.docid}}"></div>
           </div>
+  		  <div id="fetch" ng-show="false"></div>
 	<div class="row">
         <div class="col-lg-12">
         <br><br>
