@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -243,9 +244,11 @@ public int documentTotalTermFrequency(int docid) {
 }
 
 @Override
-public String[] suggest(String prefix, int num) {
+public List<Suggest> suggest(String prefix, int num) {
 	// TODO Auto-generated method stub
 	return null;
 }
+
+
 
 }

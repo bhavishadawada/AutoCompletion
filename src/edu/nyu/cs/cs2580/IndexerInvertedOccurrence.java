@@ -452,9 +452,5 @@ public class IndexerInvertedOccurrence extends Indexer2 {
 		}
 	}
 
-	@Override
-	public String[] suggest(String prefix, int num) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }
