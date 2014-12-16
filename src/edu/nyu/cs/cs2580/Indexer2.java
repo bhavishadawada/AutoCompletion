@@ -88,6 +88,7 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 	}
 	
 	public List<Suggest> suggest(String prefix, int num){
+		prefix = prefix.toLowerCase();
 		List<Suggest> sgLs =  new ArrayList<Suggest>();
 		if(prefix.endsWith(" ")){
 			System.out.println("word tree");
@@ -110,10 +111,16 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 		else{
 			// auto completion
 			System.out.println("auto completion");
-	        String[] arr = this._trieTree.suggest(prefix);
+			String[] wordLs = prefix.split(" ");
+	        String[] arr = this._trieTree.suggest(wordLs[wordLs.length-1]);
+	        String result = "";
+	        for(int i = 0; i < wordLs.length-1; i++){
+	        	result += wordLs[i];
+	        	result += " ";
+	        }
 	        for(String str : arr){
 	        	double freq = _corpusTermFrequency.get(_dictionary.get(str));
-	        	sgLs.add(new Suggest(normalize(freq, 10)/2,str));
+	        	sgLs.add(new Suggest(normalize(freq, 10)/2,result+str));
 	        }
 	        Collections.sort(sgLs);
 	        /*
