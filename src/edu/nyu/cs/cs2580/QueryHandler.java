@@ -97,7 +97,7 @@ class QueryHandler implements HttpHandler {
         } else if(key.equals("numterms")){
         	_numterms = Integer.parseInt(val);
         }
-        else if(key.equals("userid")){
+        else if(key.equals("userId")){
         	_userId = Integer.parseInt(val);
         }
       }  // End of iterating over params
@@ -242,7 +242,7 @@ class QueryHandler implements HttpHandler {
 			
 			// Write to the user session 
 			System.out.println("_userId: " + cgiArgs._userId);
-			QueryLogger.addQuery(cgiArgs._userId, cgiArgs._query);
+			QueryLogger.addQuery(0, cgiArgs._query);
 			
 		}
 		else if(uriPath.equals("/suggest")){
