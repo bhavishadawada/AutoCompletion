@@ -36,6 +36,13 @@
      </div>
       </div> <!-- /row -->
 </div> <!-- /container full -->
+<br>
+<br>
+
+<div class="container">
+<h5 ng-show="expansionLs.length">Searches related to {{query}}</h5>
+<a ng-repeat="expansion in expansionLs" class="expansion" href="#" ng-click="getExpansion($index)">{{expansion.term}}</a>
+</div>
 
 <div class="container">
   	<hr>
