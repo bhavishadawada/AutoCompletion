@@ -71,7 +71,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
     	//$scope.query = $scope.query.replace(/\s/g,"%20");
       console.log("search " + $scope.query);
       searchXmlhttp=new XMLHttpRequest();
-      searchXmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&ranker=favorite&format=json&num=30",true);
+      searchXmlhttp.open("GET","http://localhost:25811/search?query="+$scope.query+"&userId="+userId + "&ranker=favorite&format=json&num=30",true);
       searchXmlhttp.onreadystatechange = searchHandler;
       searchXmlhttp.send();
       expansion();
@@ -88,8 +88,8 @@ myApp.controller('searchCtrl', function($scope, $http) {
     
     function expansion(){
     	var xmlhttp = new XMLHttpRequest();
-    	xmlhttp.open("GET","http://localhost:25811/prf?query="+$scope.query+"&ranker=favorite&format=json&num=30&numterms=10",true);
-    	console.log("GET","http://localhost:25811/prf?query="+$scope.query+"&ranker=favorite&format=json&num=30&numterms=10");
+    	xmlhttp.open("GET","http://localhost:25811/prf?query="+$scope.query+ "&userId="+userId + "&ranker=favorite&format=json&num=30&numterms=10",true);
+    	console.log("GET","http://localhost:25811/prf?query="+$scope.query+"&userId="+userId+"&ranker=favorite&format=json&num=30&numterms=10");
     	xmlhttp.onreadystatechange = function(){
       	$scope.expansionLs = angular.fromJson(xmlhttp.responseText);
      		$scope.$apply();

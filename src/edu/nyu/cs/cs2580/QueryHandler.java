@@ -6,9 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
+
+import org.w3c.dom.CDATASection;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -97,7 +100,7 @@ class QueryHandler implements HttpHandler {
         } else if(key.equals("numterms")){
         	_numterms = Integer.parseInt(val);
         }
-        else if(key.equals("userId")){
+        else if(key.equals("userid")){
         	_userId = Integer.parseInt(val);
         }
       }  // End of iterating over params
@@ -242,7 +245,7 @@ class QueryHandler implements HttpHandler {
 			
 			// Write to the user session 
 			System.out.println("_userId: " + cgiArgs._userId);
-			QueryLogger.addQuery(0, cgiArgs._query);
+			QueryLogger.addQuery(cgiArgs._userId, cgiArgs._query);
 			
 		}
 		else if(uriPath.equals("/suggest")){
