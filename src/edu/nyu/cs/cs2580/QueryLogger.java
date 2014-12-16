@@ -26,16 +26,17 @@ public class QueryLogger {
 	}
 	
 	// Get the most frequently types queries by a user in a session
-	public static List<String> getTopQueries(int userId, String partialQuery){
-		List<String> recentQueryList = new ArrayList<>();
+	public static List<Suggest> getTopQueries(int userId, String partialQuery){
+		List<Suggest> recentQueryList = new ArrayList<>();
+		double i = 0;
 		for(String str : _queryLog.get(userId)){
+			i++;
 			if(str.toLowerCase().startsWith(partialQuery.toLowerCase())){
-				recentQueryList.add(str);
+				recentQueryList.add(new Suggest(1.0/i,str));
 			}
 			if(recentQueryList.size() == resultSetSize){
 				break;
 			}
-			
 		}
 		return recentQueryList;
 	}
@@ -61,10 +62,9 @@ public class QueryLogger {
 		QueryLogger.addQuery(1, "world class");
 		QueryLogger.addQuery(1, "new york university");
 		System.out.println("New".startsWith("New"));
-		List<String> result = QueryLogger.getTopQueries(1, "New");
-		System.out.println(result.size());
-		
-		
+		List<Suggest> result = QueryLogger.getTopQueries(1, "New");
+		for(Suggest sg : result)
+			System.out.println(sg);
 	}
 	
 }

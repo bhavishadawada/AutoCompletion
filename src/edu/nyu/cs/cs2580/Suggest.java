@@ -9,6 +9,17 @@ public class Suggest implements Comparable{
 		this.score = score;
 		this.str = str;
 	}
+	Suggest(double score, String[] wordLs){
+		this.score = score;
+		StringBuffer sb = new StringBuffer();
+		for(int i = 0; i < wordLs.length; i++){
+			if(i > 0){
+				sb.append(" ");
+			}
+			sb.append(wordLs[i]);
+		}
+		this.str = sb.toString();
+	}
 	public String toString(){
 		return this.score + " " + this.str;
 	}

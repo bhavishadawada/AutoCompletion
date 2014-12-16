@@ -190,60 +190,44 @@ public class WordTree {
 		return size;
 	}
 
-	public List<String> suggest(String query){
+	public ArrayList<Suggest> suggest(String query){
 		String[] wordLs = query.split(" ");
-		String[][] wordArr = suggest(wordLs);
-		List<String> suggestLs = new ArrayList<String>(wordArr.length);
-		for(int i = 0; i < wordArr.length; i++){
-			StringBuffer sb = new StringBuffer();
-			String[] ls = wordArr[i];
-			for(int j = 0; j < ls.length; j++){
-				if(j > 0)
-					sb.append(" ");
-				sb.append(ls[j]);
-			}
-			suggestLs.add(sb.toString());
-		}
-		return suggestLs;
+		return suggest(wordLs);
 	}
 
 	/*
 	 * Recursive function for finding all words starting with the given prefix
 	 */
 
-	public String[][] suggest(String[] wordLs){
+	public ArrayList<Suggest> suggest(String[] wordLs){
 		int[] idLs = wordLsToIdLs(wordLs, false);
-		int[][] idArr = suggest(idLs);
-		ArrayList<String[]> wordArr = new ArrayList<String[]>();
-		for(int i = 0; i < idArr.length; i++){
-			String[] strLs = idLsToWordLs(idArr[i]);
+		ArrayList<Item>  idArr = suggest(idLs);
+		ArrayList<Suggest> sgLs = new ArrayList<Suggest>();
+		for(int i = 0; i < idArr.size(); i++){
+			String[] strLs = idLsToWordLs(idArr.get(i).idLs);
 			if(strLs.length > 0){
-				wordArr.add(strLs);
+				sgLs.add(new Suggest(idArr.get(i).freq, strLs));
 			}
 		}
-		return wordArr.toArray(new String[wordArr.size()][]);
+		return sgLs;
 	}
 
-	public int[][] suggest(int[] idLs)
+	public ArrayList<Item> suggest(int[] idLs)
 	{
 		return suggest(root, idLs, 0);
 	}
 
-	private int[][] suggest(Node root, int[] idLs, int offset)
+	private ArrayList<Item> suggest(Node root, int[] idLs, int offset)
 	{
+		ArrayList<Item> itemLs = new ArrayList<Item>();
 		if (offset == idLs.length)
 		{
-			ArrayList<Item> itemLs = new ArrayList<Item>(size);
 			int[] newIdLs = new int[maxDepth];
 			for (int i = 0; i < offset; i++)
 				newIdLs[i] = idLs[i];
 			getAll(root, itemLs, newIdLs, offset);
 			Collections.sort(itemLs);
-			int[][] idArr = new int[itemLs.size()][];
-			for(int i = 0; i < itemLs.size(); i++){
-				idArr[i] = itemLs.get(i).idLs;
-			}
-			return idArr;
+			return itemLs;
 		}
 		int c = idLs[offset];
 
@@ -255,7 +239,8 @@ public class WordTree {
 			else if (next.id == c) return suggest(next, idLs, offset + 1);
 			else break;
 		}
-		return new int[][] { idLs};
+		//return new int[][] { idLs};
+		return itemLs;
 	}
 
 
@@ -441,9 +426,9 @@ public class WordTree {
 		wt.add("new york city");
 		wt.add("new york times");
 		wt.add("new york happy");
-		List<String> wordArr = wt.suggest("new");
-		for(String wordLs : wordArr){
-			System.out.println(wordLs);
+		List<Suggest> sgLs = wt.suggest("new");
+		for(Suggest sg : sgLs){
+			System.out.println(sg);
 		}
 		String str = wt.convertTreeToString(0);
 		System.out.println(str);
@@ -451,9 +436,9 @@ public class WordTree {
 		str = wt.convertTreeToString(3);
 		System.out.println(str);
 
-		wordArr = wt.suggest("new");
-		for(String wordLs : wordArr){
-			System.out.println(wordLs);
+		sgLs = wt.suggest("new");
+		for(Suggest sg : sgLs){
+			System.out.println(sg);
 		}
 
 		str = wt.convertTreeToString(0);

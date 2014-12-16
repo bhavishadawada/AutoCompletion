@@ -92,17 +92,12 @@ public abstract class Indexer2 extends Indexer implements Serializable{
 				String word = wordLs[0];
 				if(_wordTreeDictionary.containsKey(word)){
 					WordTree wt = _wordTreeDictionary.get(word);
-					String[][] wordArr = wt.suggest(wordLs);
-					System.out.println("suggest len " + wordArr.length);
-					arr = new String[wordArr.length];
-					for(int i = 0; i < wordArr.length; i++){
-						StringBuffer sb = new StringBuffer();
-						for(int j = 0; j < wordArr[i].length; j++){
-							if(j > 0)
-								sb.append(" ");
-							sb.append(wordArr[i][j]);
-						}
-						arr[i] = sb.toString();
+					ArrayList<Suggest> sgLs = wt.suggest(wordLs);
+					System.out.println("suggest len " + sgLs.size());
+					arr = new String[sgLs.size()];
+					for(int i = 0; i < sgLs.size(); i++){
+						arr[i] = sgLs.get(i).str;
+						System.out.println(sgLs.get(i));
 					}
 				}
 			}
