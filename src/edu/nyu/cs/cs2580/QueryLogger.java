@@ -9,37 +9,41 @@ import java.util.List;
 
 public class QueryLogger {
 
-	private static Map<Integer, LinkedList<String>> _queryLog = 
-								new HashMap<Integer, LinkedList<String>>();
+	private static Map<Integer, LinkedList<Suggest>> _queryLog = 
+								new HashMap<Integer, LinkedList<Suggest>>();
 	
 	private static int resultSetSize = 10 ; 
 	
 	// To add the query to the beginning of LinkedList of a specific user
 	public static void addQuery(int userId , String query){
+		query = query.toLowerCase();
 		if(!_queryLog.containsKey(userId)){
 			QueryLogger.addIdToMap(userId);
 		}
-		LinkedList<String> userList = _queryLog.get(userId);
-		//double wordFrequency = -1 ; 
-		if(userList.contains(query)){
-			userList.remove(query);
+		LinkedList<Suggest> userList = _queryLog.get(userId);
+		double wordFrequency = -1 ; 
+		for(Suggest sg : userList){
+			if(sg.str.equals(query)){
+				userList.remove(sg);
+				wordFrequency = sg.score;
+			}
 		}
-		_queryLog.get(userId).addFirst(query.toLowerCase());
+		_queryLog.get(userId).addFirst(new Suggest(wordFrequency +1 , query));
 		
+	}
+	
+	public static double normalize(double in, double threshold){
+	    double out = 1 - Math.pow(Math.E, -in/threshold);
+	    return out;
 	}
 	
 	// Get the most frequently types queries by a user in a session
 	public static List<Suggest> getTopQueries(int userId, String partialQuery){
 		List<Suggest> recentQueryList = new ArrayList<>();
-		double i = 0;
 		if(_queryLog.containsKey(userId)){
-		    for(String str : _queryLog.get(userId)){
-		    	i++;
-		    	if(str.toLowerCase().startsWith(partialQuery.toLowerCase())){
-		    		recentQueryList.add(new Suggest(1.0/i,str));
-		    	}
-		    	if(recentQueryList.size() == resultSetSize){
-		    		break;
+		    for(Suggest sg: _queryLog.get(userId)){
+		    	if(sg.str.startsWith(partialQuery.toLowerCase())){
+		    		recentQueryList.add(new Suggest(normalize(sg.score, 1), sg.str));
 		    	}
 		    }
 		}
@@ -51,7 +55,7 @@ public class QueryLogger {
 	}
 	
 	public static void addIdToMap(int id){
-		_queryLog.put(id,  new LinkedList<String>());
+		_queryLog.put(id,  new LinkedList<Suggest>());
 	}
 	
 	public static int getId(){
