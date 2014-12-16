@@ -140,7 +140,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
       	$scope.webList = angular.fromJson(searchXmlhttp.responseText);
      		$scope.$apply();
      		for(var i = 0; i < $scope.webList.length; i++){
-     			fetch("http://localhost/~angieyayabird/wiki/"+$scope.webList[i].title, "web"+$scope.webList[i].docid);
+     			fetch("/AutoCompletion/wiki/"+$scope.webList[i].title, "web"+$scope.webList[i].docid);
      		}
       }
     }
