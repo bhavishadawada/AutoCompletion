@@ -21,6 +21,10 @@
         <div ng-repeat="web in webList">
         <a href='{{"file://localhost/Users/angieyayabird/Sites/wiki/" + web.title}}'>{{web.title}}</a>
         </div>
+        </br>
+        <div ng-repeat="suggest in suggestList">
+        {{suggest.term}}
+        </div>
 </div>
 </body>
 </html>

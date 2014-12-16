@@ -64,7 +64,8 @@ myApp.controller('searchCtrl', function($scope, $http) {
     };
     $scope.predict = function(){
     	console.log("type space" + $scope.query);
-    	suggest($scope.query+" ");
+    	$scope.query = $scope.query + " ";
+    	suggest($scope.query);
     }
     $scope.search = function(){
     	//$scope.query = $scope.query.replace(/\s/g,"%20");

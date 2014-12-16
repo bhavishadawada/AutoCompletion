@@ -91,7 +91,7 @@ public abstract class Ranker {
 		String[] sgArr = new String[num];
 		for(int i = 0; i < num; i++){
 			sgArr[i] = sgLs.get(i).str;
-			System.out.println("ranker suggest: " + sgArr[i]);
+			System.out.println("ranker suggest: " + sgLs.get(i).toString());
 		}
 		return sgArr;
 	}
