@@ -75,6 +75,10 @@ myApp.controller('searchCtrl', function($scope, $http) {
       searchXmlhttp.onreadystatechange = searchHandler;
       searchXmlhttp.send();
     };
+    $scope.select = function(suggestId){
+    	$scope.query = $scope.suggestList[suggestId].term;
+    	$scope.search();
+    }
     
     function suggest(prefix){
     	prefix = prefix.replace(/\s/g,"%20");

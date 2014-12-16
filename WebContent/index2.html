@@ -20,25 +20,25 @@
 
       <div class="row">
        
+     <div class="dropdown">
         <div class="col-lg-12 text-center v-center">
           
           <form class="col-lg-12">
             <div class="input-group" style="width:500px;text-align:center;margin:0 auto;">
-            <input class="form-control input-lg" ng-model="query" placeholder="What needs to be search?" ng-keyup="suggest()" ng-change="search()" list="datalist" ng-enter="search()" ng-space="predict()" ng-options="suggest.term for suggest in suggestList"/>   
-            <datalist id="datalist">
-		    <option ng-repeat="suggest in suggestList" value="{{suggest.term}}"></option>
-		    </datalist>
+     		<input type="input" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="false" class="form-control input-lg" ng-model="query" placeholder="What needs to be search?" ng-keyup="suggest()" ng-change="search()" ng-enter="search()" ng-space="predict()" ng-options="suggest.term for suggest in suggestList"/>   
+      		<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+      		  <li ng-repeat="suggest in suggestList" role="presentation"><a role="menuitem" tabindex="-1" href="#" ng-click="select($index)">{{suggest.term}}</a></li>
+      		</ul>
               <span class="input-group-btn"><button class="btn btn-lg btn-primary" type="button" ng-click="search()">Search</button></span>
             </div>
           </form>
         </div>
+     </div>
       </div> <!-- /row -->
 </div> <!-- /container full -->
 
 <div class="container">
-  
   	<hr>
-  			
           <div class="panel panel-default" ng-repeat="web in webList">
             <div class="panel-heading"><h4><a href='{{"http://localhost/~angieyayabird/wiki/" + web.title}}'>{{web.title}}</a></h4></div>
             <div class="panel-body" id="{{'web'+web.docid}}"></div>
@@ -52,6 +52,7 @@
         </div>
     </div>
 </div>
+
 
 
 	<!-- script references -->
