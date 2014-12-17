@@ -25,7 +25,7 @@ public class Suggest implements Comparable{
 	}
 	@Override
 	public int compareTo(Object o) {
-		return Double.compare(((Suggest)o).score , score);
+		return Double.compare(((Suggest)o).score, score);
 	}
 	static public void main(String[] args){
 		Suggest[] sgLs = new Suggest[3];
