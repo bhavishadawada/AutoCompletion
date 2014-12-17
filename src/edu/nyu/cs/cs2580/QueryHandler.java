@@ -263,7 +263,7 @@ class QueryHandler implements HttpHandler {
 			
 			
 			// Write all the signals into other class and call the function here
-			String[] wordArr = ranker.suggest(cgiArgs._query, 10);
+			String[] wordArr = ranker.suggest(cgiArgs._userId , cgiArgs._query, 10);
 			System.out.println("wordArr.length " + wordArr.length);
 			for(String word : wordArr){
 				System.out.println(word);

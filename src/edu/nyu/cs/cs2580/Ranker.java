@@ -83,9 +83,9 @@ public abstract class Ranker {
 		return results;
 	}
 	
-	public String[] suggest(String prefix, int num){
+	public String[] suggest(int userId, String prefix, int num){
 		List<Suggest> sgLs = _indexer.suggest(prefix, num);
-		sgLs.addAll(QueryLogger.getTopQueries(0, prefix));
+		sgLs.addAll(QueryLogger.getTopQueries(userId, prefix));
 		Collections.sort(sgLs);
 		num = Math.min(num, sgLs.size());
 		String[] sgArr = new String[num];

@@ -82,7 +82,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
     }
 
     $scope.getExpansion= function(expansionId){
-    	$scope.query = $scope.expansionLs[expansionId].term;
+    	$scope.query = $scope.query + " " + $scope.expansionLs[expansionId].term;
     	$scope.search();
     }
     

@@ -25,20 +25,7 @@ public class Suggest implements Comparable{
 	}
 	@Override
 	public int compareTo(Object o) {
-		if(score > ((Suggest)o).score){
-			return -1;
-		}
-		else if(score == ((Suggest)o).score){
-			if(str.length() < ((Suggest)o).str.length()){
-				return -1;
-			}
-			else{
-				return 1;
-			}
-		}
-		else{
-			return 1;
-		}
+		return Double.compare(((Suggest)o).score , score);
 	}
 	static public void main(String[] args){
 		Suggest[] sgLs = new Suggest[3];
