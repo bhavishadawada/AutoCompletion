@@ -47,7 +47,7 @@
 <div class="container">
   	<hr>
           <div class="panel panel-default" ng-repeat="web in webList">
-            <div class="panel-heading"><h4><a href='{{"/AutoCompletion/wiki/" + web.title}}'>{{web.title}}</a></h4></div>
+            <div class="panel-heading"><h4><a href='{{wiki_url_base + web.title}}'>{{web.title}}</a></h4></div>
             <div class="panel-body" id="{{'web'+web.docid}}"></div>
           </div>
   		  <div id="fetch" ng-show="false"></div>

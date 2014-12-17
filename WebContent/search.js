@@ -36,6 +36,8 @@ myApp.controller('searchCtrl', function($scope, $http) {
 	  var suggestXmlhttp;
 	  var userId;
 
+      $scope.wiki_url_base = "/AutoCompletion/wiki/"; 
+
 	  if (typeof(Storage) != "undefined") {
       userId = localStorage.getItem("userId");
       console.log("from localStorage get userId: " + userId);
@@ -140,7 +142,7 @@ myApp.controller('searchCtrl', function($scope, $http) {
       	$scope.webList = angular.fromJson(searchXmlhttp.responseText);
      		$scope.$apply();
      		for(var i = 0; i < $scope.webList.length; i++){
-     			fetch("/AutoCompletion/wiki/"+$scope.webList[i].title, "web"+$scope.webList[i].docid);
+     			fetch($scope.wiki_url_base+$scope.webList[i].title, "web"+$scope.webList[i].docid);
      		}
       }
     }
